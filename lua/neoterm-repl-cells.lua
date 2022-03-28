@@ -49,21 +49,29 @@ end
 -----------------------------------
 -- SENDING CELLS --
 -----------------------------------
-function M.send_cell_to_repl(marker)
+-- function M.send_cell_to_repl(marker)
+--     local start_row = vim.api.nvim_win_get_cursor(0)[1]
+--     local top_row, bot_row = M.get_cell_bounds(start_row, marker)
+--     vim.fn["neoterm#repl#line"](top_row, bot_row)
+-- end
+--
+-- function M.send_cell_to_repl_and_jump(marker)
+--     local start_row = vim.api.nvim_win_get_cursor(0)[1]
+--     local top_row, bot_row = M.get_cell_bounds(start_row, marker)
+--     vim.fn["neoterm#repl#line"](top_row, bot_row)
+--     local buf_len = vim.api.nvim_buf_line_count(0)
+--     if(bot_row ~= buf_len)
+--     then
+--         vim.api.nvim_win_set_cursor(0, {bot_row+2, 0})
+--     end
+-- end
+function M.visual_select_cell(marker)
     local start_row = vim.api.nvim_win_get_cursor(0)[1]
     local top_row, bot_row = M.get_cell_bounds(start_row, marker)
-    vim.fn["neoterm#repl#line"](top_row, bot_row)
-end
-
-function M.send_cell_to_repl_and_jump(marker)
-    local start_row = vim.api.nvim_win_get_cursor(0)[1]
-    local top_row, bot_row = M.get_cell_bounds(start_row, marker)
-    vim.fn["neoterm#repl#line"](top_row, bot_row)
-    local buf_len = vim.api.nvim_buf_line_count(0)
-    if(bot_row ~= buf_len)
-    then
-        vim.api.nvim_win_set_cursor(0, {bot_row+2, 0})
-    end
+    vim.cmd("normal! ")
+    vim.fn.setpos(".", { '.', top_row, 0, 0 })
+    vim.cmd("normal! V")
+    vim.fn.setpos(".", { '.', bot_row, 0, 0 })
 end
 
 -----------------------------------
