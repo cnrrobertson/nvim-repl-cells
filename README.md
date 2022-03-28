@@ -1,2 +1,2 @@
-# neoterm-repl-cells
-Extend neoterm's REPL to send "cells" of code
+# nvim-repl-cells
+Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
