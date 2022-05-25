@@ -77,6 +77,12 @@ end
 -----------------------------------
 -- ADDING/REMOVING CELLS --
 -----------------------------------
+function M.insert_cell_here(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  vim.api.nvim_buf_set_lines(0, start_row-1, start_row-1, false, {marker})
+  vim.api.nvim_win_set_cursor(0, {start_row+1, 0})
+end
+
 function M.insert_cell_above(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row, _ = M.get_cell_bounds(start_row, marker)

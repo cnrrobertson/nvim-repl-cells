@@ -8,6 +8,7 @@ command! TREPLVisualSelectCell lua require'nvim-repl-cells'.visual_select_cell(v
 
 command! TREPLInsertCellAbove lua require'nvim-repl-cells'.insert_cell_above(vim.g.nvim_repl_cell_marker)
 command! TREPLInsertCellBelow lua require'nvim-repl-cells'.insert_cell_below(vim.g.nvim_repl_cell_marker)
+command! TREPLInsertCellHere lua require'nvim-repl-cells'.insert_cell_here(vim.g.nvim_repl_cell_marker)
 command! TREPLDeleteCell lua require'nvim-repl-cells'.delete_cell(vim.g.nvim_repl_cell_marker)
 command! TREPLSplitCell lua require'nvim-repl-cells'.split_cell(vim.g.nvim_repl_cell_marker)
 command! TREPLMergeCellBelow lua require'nvim-repl-cells'.merge_cell_below(vim.g.nvim_repl_cell_marker)
