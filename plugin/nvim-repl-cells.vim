@@ -1,6 +1,9 @@
 if !exists('g:nvim_repl_cell_marker')
   let g:nvim_repl_cell_marker = '# %%'
 end
+if !exists('g:nvim_repl_cell_highlight')
+  let g:nvim_repl_cell_highlight = 1
+end
 
 command! TREPLVisualSelectCell lua require'nvim-repl-cells'.visual_select_cell(vim.g.nvim_repl_cell_marker)
 " command! TREPLSendCell lua require'nvim-repl-cells'.send_cell_to_repl(vim.g.nvim_repl_cell_marker)
@@ -16,3 +19,7 @@ command! TREPLMergeCellAbove lua require'nvim-repl-cells'.merge_cell_above(vim.g
 
 command! TREPLJumpToNextCell lua require'nvim-repl-cells'.jump_to_next_cell(vim.g.nvim_repl_cell_marker)
 command! TREPLJumpToPreviousCell lua require'nvim-repl-cells'.jump_to_previous_cell(vim.g.nvim_repl_cell_marker)
+
+if g:nvim_repl_cell_highlight == 1
+    autocmd BufWrite,BufEnter * lua require'nvim-repl-cells'.highlight_cells(vim.g.nvim_repl_cell_marker)
+endif

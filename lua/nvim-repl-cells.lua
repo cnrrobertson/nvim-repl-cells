@@ -155,4 +155,18 @@ function M.jump_to_previous_cell(marker)
   end
 end
 
+-----------------------------------
+-- VISUALIZING CELLS --
+-----------------------------------
+function M.highlight_cells(marker)
+  local ns_id = vim.api.nvim_create_namespace('cells')
+  local lines = vim.api.nvim_buf_get_lines(0,0,-1,false)
+  for k, temp_row in pairs(lines) do
+    if(string.find(temp_row, marker) ~= nil)
+    then
+      vim.api.nvim_buf_set_extmark(0,ns_id,k-1,-1,{hl_eol=true,line_hl_group="ColorColumn"})
+      -- vim.api.nvim_buf_add_highlight(0,-1,"Beacon",k-1,0,-1)
+    end
+  end
+end
 return M
