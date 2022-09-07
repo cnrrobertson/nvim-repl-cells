@@ -156,6 +156,48 @@ function M.jump_to_previous_cell(marker)
 end
 
 -----------------------------------
+-- MOVING CELLS --
+-----------------------------------
+function M.move_cell_down(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local buf_len = vim.api.nvim_buf_line_count(0)
+  local top_row1, bot_row1 = M.get_cell_bounds(start_row, marker)
+  local start_pos = start_row-top_row1
+  if(bot_row1 ~= buf_len) then
+    local top_row2, bot_row2 = M.get_cell_bounds(bot_row1+1, marker)
+    local cell1 = vim.api.nvim_buf_get_lines(0,top_row1-1,bot_row1,false)
+    local cells = vim.api.nvim_buf_get_lines(0,top_row2-1,bot_row2,false)
+    local len_cell2 = #cells
+    table.insert(cells, marker)
+    for _,line in ipairs(cell1) do
+      table.insert(cells, line)
+    end
+    vim.api.nvim_buf_set_lines(0,top_row1-1,bot_row2,false,cells)
+    vim.api.nvim_win_set_cursor(0, {top_row1+1+len_cell2+start_pos, 0})
+  end
+  M.highlight_cells(marker)
+end
+
+function M.move_cell_up(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local buf_len = vim.api.nvim_buf_line_count(0)
+  local top_row2, bot_row2 = M.get_cell_bounds(start_row, marker)
+  local start_pos = start_row-top_row2
+  if(top_row2 ~= 1) then
+    local top_row1, bot_row1 = M.get_cell_bounds(top_row2-2, marker)
+    local cell1 = vim.api.nvim_buf_get_lines(0,top_row1-1,bot_row1,false)
+    local cells = vim.api.nvim_buf_get_lines(0,top_row2-1,bot_row2,false)
+    table.insert(cells, marker)
+    for _,line in ipairs(cell1) do
+      table.insert(cells, line)
+    end
+    vim.api.nvim_buf_set_lines(0,top_row1-1,bot_row2,false,cells)
+    vim.api.nvim_win_set_cursor(0, {top_row1+start_pos, 0})
+  end
+  M.highlight_cells(marker)
+end
+
+-----------------------------------
 -- VISUALIZING CELLS --
 -----------------------------------
 function M.highlight_cells(marker)
