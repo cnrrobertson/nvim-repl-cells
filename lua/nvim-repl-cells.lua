@@ -161,6 +161,7 @@ end
 function M.highlight_cells(marker)
   local ns_id = vim.api.nvim_create_namespace('cells')
   local lines = vim.api.nvim_buf_get_lines(0,0,-1,false)
+  vim.api.nvim_buf_clear_namespace(0,ns_id,0,-1)
   for k, temp_row in pairs(lines) do
     if(string.find(temp_row, marker) ~= nil)
     then
@@ -169,4 +170,5 @@ function M.highlight_cells(marker)
     end
   end
 end
+
 return M
