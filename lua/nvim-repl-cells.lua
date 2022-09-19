@@ -81,6 +81,7 @@ function M.insert_cell_here(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   vim.api.nvim_buf_set_lines(0, start_row-1, start_row-1, false, {marker})
   vim.api.nvim_win_set_cursor(0, {start_row+1, 0})
+  M.highlight_cells(marker)
 end
 
 function M.insert_cell_above(marker)
@@ -88,6 +89,7 @@ function M.insert_cell_above(marker)
   local top_row, _ = M.get_cell_bounds(start_row, marker)
   vim.api.nvim_buf_set_lines(0, top_row-1, top_row-1, false, {"", "", marker})
   vim.api.nvim_win_set_cursor(0, {top_row, 0})
+  M.highlight_cells(marker)
 end
 
 function M.insert_cell_below(marker)
@@ -95,6 +97,7 @@ function M.insert_cell_below(marker)
   local _, bot_row = M.get_cell_bounds(start_row, marker)
   vim.api.nvim_buf_set_lines(0, bot_row, bot_row, false, {"", marker, "", ""})
   vim.api.nvim_win_set_cursor(0, {bot_row+3, 0})
+  M.highlight_cells(marker)
 end
 
 function M.delete_cell(marker)
@@ -105,12 +108,14 @@ function M.delete_cell(marker)
     top_row = top_row - 1
   end
   vim.api.nvim_buf_set_lines(0, top_row-1, bot_row, false, {})
+  M.highlight_cells(marker)
 end
 
 function M.split_cell(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   vim.api.nvim_buf_set_lines(0, start_row, start_row, false, { "", marker, ""})
   vim.api.nvim_win_set_cursor(0, {start_row+3, 0})
+  M.highlight_cells(marker)
 end
 
 function M.merge_cell_below(marker)
@@ -121,6 +126,7 @@ function M.merge_cell_below(marker)
     return
   end
   vim.api.nvim_buf_set_lines(0, bot_row, bot_row+1, false, {})
+  M.highlight_cells(marker)
 end
 
 function M.merge_cell_above(marker)
@@ -130,6 +136,7 @@ function M.merge_cell_above(marker)
     return
   end
   vim.api.nvim_buf_set_lines(0, top_row-2, top_row-1, false, {})
+  M.highlight_cells(marker)
 end
 
 -----------------------------------
@@ -201,6 +208,10 @@ end
 -- VISUALIZING CELLS --
 -----------------------------------
 function M.highlight_cells(marker)
+  if vim.g.nvim_repl_cell_highlight == 0
+  then
+    return
+  end
   local ns_id = vim.api.nvim_create_namespace('cells')
   local lines = vim.api.nvim_buf_get_lines(0,0,-1,false)
   vim.api.nvim_buf_clear_namespace(0,ns_id,0,-1)
