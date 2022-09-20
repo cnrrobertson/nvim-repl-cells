@@ -228,11 +228,79 @@ function M.highlight_cells(marker)
     top_row, bot_row = M.get_cell_bounds(current_row, marker)
   end
 end
-    then
-      vim.api.nvim_buf_set_extmark(0,ns_id,k-1,-1,{hl_eol=true,line_hl_group="ColorColumn"})
-      -- vim.api.nvim_buf_add_highlight(0,-1,"Beacon",k-1,0,-1)
-    end
+
+function M.toggle_cell_fold(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local _, bot_row = M.get_cell_bounds(start_row, marker)
+  if vim.fn.foldclosed(bot_row) == -1
+  then
+    M.fold_cell(start_row, marker)
+  else
+    M.unfold_cell(start_row, marker)
   end
+end
+
+function M.fold_cell(row,marker)
+  local top_row, bot_row = M.get_cell_bounds(row, marker)
+  if vim.fn.foldlevel(row) == 0
+  then
+    if top_row ~= 1
+    then
+      vim.api.nvim_command(":"..tostring(top_row-1)..","..tostring(bot_row).."fold")
+    else
+      vim.api.nvim_command(":"..tostring(top_row)..","..tostring(bot_row).."fold")
+    end
+  else
+    vim.api.nvim_command(":"..tostring(bot_row).."foldclose")
+  end
+end
+
+function M.unfold_cell(row,marker)
+  local top_row, bot_row = M.get_cell_bounds(row, marker)
+  vim.api.nvim_command(":"..tostring(bot_row).."foldopen")
+end
+
+function M.fold_all_cells(marker)
+  local buf_len = vim.api.nvim_buf_line_count(0)
+  local current_row = 1
+  local top_row, bot_row = M.get_cell_bounds(current_row, marker)
+  while bot_row ~= buf_len
+  do
+    M.fold_cell(top_row, marker)
+    current_row = bot_row + 1
+    top_row, bot_row = M.get_cell_bounds(current_row, marker)
+  end
+  if (top_row ~= 1) -- Case of no cell
+  then
+    M.fold_cell(top_row, marker)
+  end
+end
+
+function M.unfold_all_cells(marker)
+  local buf_len = vim.api.nvim_buf_line_count(0)
+  local current_row = 1
+  local top_row, bot_row = M.get_cell_bounds(current_row, marker)
+  while bot_row ~= buf_len
+  do
+    M.unfold_cell(top_row, marker)
+    current_row = bot_row + 2
+    top_row, bot_row = M.get_cell_bounds(current_row, marker)
+  end
+  if (top_row ~= 1) -- Case of no cell
+  then
+    M.unfold_cell(top_row, marker)
+  end
+end
+
+function M.set_foldtext()
+  function _G.custom_foldtext()
+    local foldstart = vim.v.foldstart
+    local line1 = vim.fn.getline(foldstart)
+    local line2 = vim.fn.getline(foldstart+1)
+    local line_count = vim.v.foldend - foldstart + 1
+    return " ⚡ "..line_count.." lines: "..line1.." // "..line2
+  end
+  vim.opt.foldtext = "v:lua.custom_foldtext()"
 end
 
 return M
