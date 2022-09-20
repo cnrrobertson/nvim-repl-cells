@@ -209,16 +209,25 @@ end
 -----------------------------------
 -- VISUALIZING CELLS --
 -----------------------------------
+  
 function M.highlight_cells(marker)
-  if vim.g.nvim_repl_cell_highlight == 0
-  then
-    return
-  end
+  local buf_len = vim.api.nvim_buf_line_count(0)
+  local current_row = 1
   local ns_id = vim.api.nvim_create_namespace('cells')
-  local lines = vim.api.nvim_buf_get_lines(0,0,-1,false)
   vim.api.nvim_buf_clear_namespace(0,ns_id,0,-1)
-  for k, temp_row in pairs(lines) do
-    if(string.find(temp_row, marker) ~= nil)
+  local top_row, bot_row = M.get_cell_bounds(current_row, marker)
+  if top_row ~= 1
+  then
+    vim.api.nvim_buf_set_extmark(0,ns_id,0,-1,{hl_eol=true,line_hl_group="ColorColumn"})
+  end
+  while bot_row ~= buf_len
+  do
+    vim.api.nvim_buf_set_extmark(0,ns_id,bot_row,-1,{hl_eol=true,line_hl_group="ColorColumn"})
+    -- vim.api.nvim_buf_add_highlight(0,-1,"Beacon",k-1,0,-1)
+    current_row = bot_row + 2
+    top_row, bot_row = M.get_cell_bounds(current_row, marker)
+  end
+end
     then
       vim.api.nvim_buf_set_extmark(0,ns_id,k-1,-1,{hl_eol=true,line_hl_group="ColorColumn"})
       -- vim.api.nvim_buf_add_highlight(0,-1,"Beacon",k-1,0,-1)
