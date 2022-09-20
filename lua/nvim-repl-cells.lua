@@ -4,6 +4,8 @@ local M = {}
 -- UTILITIES --
 -----------------------------------
 function M.get_cell_bounds(start_row, marker)
+  -- Change string to Lua regex pattern format
+  local pattern = string.gsub(marker, "%%", "%%%%")
   local buf_len = vim.api.nvim_buf_line_count(0)
 
   local top_row = nil
@@ -11,7 +13,7 @@ function M.get_cell_bounds(start_row, marker)
   while(top_row == nil)
   do
     local temp_row = vim.api.nvim_buf_get_lines(0, row_num-1, row_num, false)[1]
-    if(string.find(temp_row, marker) ~= nil)
+    if(string.find(temp_row, pattern) == 1)
     then
       top_row = row_num+1
     else
@@ -32,7 +34,7 @@ function M.get_cell_bounds(start_row, marker)
   while(bot_row == nil)
   do
     local temp_row = vim.api.nvim_buf_get_lines(0, row_num-1, row_num, false)[1]
-    if(string.find(temp_row, marker) ~= nil)
+    if(string.find(temp_row, pattern) == 1)
     then
       bot_row = row_num-1
     else
