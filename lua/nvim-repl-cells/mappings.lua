@@ -1,5 +1,6 @@
 local M = {}
 local vim = vim
+local cells = require("nvim-repl-cells")
 local send = require("nvim-repl-cells.send_cells")
 local config = require("nvim-repl-cells.config")
 
@@ -37,6 +38,13 @@ function M.set_filetype_send_mappings()
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
     vim.keymap.set('n','<localleader>rF', function()send.send_command(command,true,true)end,{desc="Run file in terminal"})
   end
+end
+
+function M.set_textobject_mappings()
+  vim.keymap.set('x', 'ic', function()cells.visual_select_in_cell(cells.get_marker())end, {desc="inner cell"})
+  vim.keymap.set('x', 'ac', function()cells.visual_select_around_cell(cells.get_marker())end, {desc="outer cell"})
+  vim.keymap.set('o', 'ic', function()cells.visual_select_in_cell(cells.get_marker())end, {desc="inner cell"})
+  vim.keymap.set('o', 'ac', function()cells.visual_select_around_cell(cells.get_marker())end, {desc="outer cell"})
 end
 
 return M
