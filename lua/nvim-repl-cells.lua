@@ -1,6 +1,28 @@
 local M = {}
 
 -----------------------------------
+-- CONFIG --
+-----------------------------------
+M.config = {
+  marker = '# %%',
+  highlight = true,
+  autofold = true,
+  foldtext = true,
+  python = {
+    marker = '# %%',
+  },
+  julia = {
+    marker = '# %%',
+  },
+  matlab = {
+    marker = '% %%',
+  },
+  markdown = {
+    marker = '```',
+  }
+}
+
+-----------------------------------
 -- UTILITIES --
 -----------------------------------
 function M.get_cell_bounds(start_row, marker)
