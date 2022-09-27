@@ -1,4 +1,7 @@
 local cells = require("nvim-repl-cells")
+local send = require("nvim-repl-cells.send_cells")
+local config = require("nvim-repl-cells.config")
+local mappings = require("nvim-repl-cells.mappings")
 -------------------------------------------------------------------------------
 -- Commands
 -------------------------------------------------------------------------------
@@ -16,15 +19,30 @@ vim.api.nvim_create_user_command("CellToggleFold", function()cells.toggle_cell_f
 vim.api.nvim_create_user_command("CellFoldAll", function()cells.fold_all_cells(cells.get_marker())end, {})
 vim.api.nvim_create_user_command("CellUnfoldAll", function()cells.unfold_all_cells(cells.get_marker())end, {})
 
+vim.api.nvim_create_user_command("CellSendLine", send.send_line, {})
+-- TODO: Need to rewrite for visual mode
+-- vim.api.nvim_create_user_command("CellSendVisual", send.send_visual, {})
+vim.api.nvim_create_user_command("CellSend", send.send_cell, {})
+vim.api.nvim_create_user_command("CellSendAndJump", function()send.send_cell();cells.jump_to_next_cell(cells.get_marker())end, {})
+vim.api.nvim_create_user_command("CellSendFile", send.send_file, {})
+
+vim.api.nvim_create_user_command("ToggleBufTerm", send.toggle, {})
+
+-------------------------------------------------------------------------------
+-- Mappings
+-------------------------------------------------------------------------------
+mappings.set_general_mappings()
+mappings.set_send_mappings()
+
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
-if cells.config.highlight == true then
+if config.highlight == true then
   vim.api.nvim_create_autocmd({"BufWrite","BufEnter"}, {pattern={"*"}, callback=function()cells.highlight_cells(cells.get_marker())end})
 end
-if cells.config.autofold == true then
+if config.autofold == true then
   vim.api.nvim_create_autocmd({"SessionLoadPost","BufReadPost"}, {pattern={"*"}, callback=function()cells.fold_all_cells(cells.get_marker())end})
 end
-if cells.config.foldtext == true then
+if config.foldtext == true then
   cells.set_foldtext()
 end

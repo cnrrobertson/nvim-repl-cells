@@ -1,43 +1,20 @@
 local M = {}
+local vim = vim
+local config = require("nvim-repl-cells.config")
 
 -----------------------------------
--- CONFIG --
+-- UTILITIES --
 -----------------------------------
-M.config = {
-  marker = '# %%',
-  highlight = true,
-  autofold = true,
-  foldtext = true,
-  python = {
-    marker = '# %%',
-  },
-  julia = {
-    marker = '# %%',
-  },
-  matlab = {
-    marker = '% %%',
-  },
-  markdown = {
-    marker = '```',
-  },
-  lua = {
-    marker = '-- %%',
-  }
-}
-
 function M.get_marker()
   local buf_type = vim.o.filetype
-  local buf_info = M.config[buf_type]
+  local buf_info = config[buf_type]
   if (buf_info == nil) or (buf_info.marker == nil) then
-    return M.config.marker
+    return config.marker
   else
     return buf_info.marker
   end
 end
 
------------------------------------
--- UTILITIES --
------------------------------------
 function M.get_cell_bounds(start_row, marker)
   -- Change string to Lua regex pattern format
   local pattern = string.gsub(marker, "%%", "%%%%")
@@ -224,7 +201,6 @@ end
 
 function M.move_cell_up(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local buf_len = vim.api.nvim_buf_line_count(0)
   local top_row2, bot_row2 = M.get_cell_bounds(start_row, marker)
   local start_pos = start_row-top_row2
   if(top_row2 ~= 1) then
@@ -244,7 +220,7 @@ end
 -----------------------------------
 -- VISUALIZING CELLS --
 -----------------------------------
-  
+
 function M.highlight_cells(marker)
   local buf_len = vim.api.nvim_buf_line_count(0)
   local current_row = 1
@@ -291,7 +267,7 @@ function M.fold_cell(row,marker)
 end
 
 function M.unfold_cell(row,marker)
-  local top_row, bot_row = M.get_cell_bounds(row, marker)
+  local _, bot_row = M.get_cell_bounds(row, marker)
   vim.api.nvim_command(":"..tostring(bot_row).."foldopen")
 end
 
