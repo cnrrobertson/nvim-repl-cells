@@ -33,6 +33,7 @@ vim.api.nvim_create_user_command("ToggleBufTerm", send.toggle, {})
 -------------------------------------------------------------------------------
 mappings.set_general_mappings()
 mappings.set_send_mappings()
+vim.api.nvim_create_autocmd({"BufEnter"}, {pattern={"*"},callback=mappings.set_filetype_send_mappings})
 
 -------------------------------------------------------------------------------
 -- Autocommands

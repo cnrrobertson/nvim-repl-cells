@@ -5,7 +5,7 @@ local config = require("nvim-repl-cells.config")
 
 function M.set_general_mappings()
   vim.keymap.set('n','<a-n>', ":ToggleBufTerm<cr>",{desc="Toggle buffer terminal"})
-  vim.keymap.set('t','<a-n>', ":ToggleBufTerm<cr>",{desc="Toggle buffer terminal"})
+  vim.keymap.set('t','<a-n>', "<c-\\><c-n>:ToggleBufTerm<cr>",{desc="Toggle buffer terminal"})
   vim.keymap.set('n',']c', ":CellJumpToNext<cr>",{desc="Next cell"})
   vim.keymap.set('n','[c', ":CellJumpToPrevious<cr>",{desc="Previous cell"})
   vim.keymap.set('n','<localleader>x', ":CellDelete<cr>",{desc="Delete cell"})
@@ -31,8 +31,12 @@ end
 function M.set_filetype_send_mappings()
   local buf_type = vim.o.filetype
   local buf_info = config[buf_type]
-  if (buf_info ~= nil) or (buf_info.repl ~= nil) then
+  if (buf_info ~= nil) and (buf_info.repl ~= nil) then
     vim.keymap.set('n','<localleader>ri', function()send.send_command(buf_info.repl,true,true)end,{desc="Start REPL"})
+  end
+  if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
+    local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
+    vim.keymap.set('n','<localleader>rF', function()send.send_command(command,true,true)end,{desc="Run file in terminal"})
   end
 end
 
