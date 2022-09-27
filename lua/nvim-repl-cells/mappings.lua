@@ -21,8 +21,7 @@ end
 
 function M.set_send_mappings()
   vim.keymap.set('n','<localleader>rr', ':CellSendLine<cr>',{desc="Send line"})
-  -- FIXME: Need to fix visual send so doesn't need this form
-  vim.keymap.set('v','<localleader>r', ':lua require("nvim-repl-cells.send_cells").send_visual()<cr>',{desc="Send visual"})
+  vim.keymap.set('v','<localleader>r',':<c-u>CellSendVisual<cr>',{desc="Send visual"})
   vim.keymap.set('n','<localleader>ee', ':CellSend<cr>',{desc="Send cell"})
   vim.keymap.set('n','<localleader>re', ':CellSendAndJump<cr>',{desc="Send cell and jump"})
     vim.keymap.set('n','<localleader>rf', ':CellSendFile<cr>', {desc="Send file"})

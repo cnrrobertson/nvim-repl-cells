@@ -20,8 +20,7 @@ vim.api.nvim_create_user_command("CellFoldAll", function()cells.fold_all_cells(c
 vim.api.nvim_create_user_command("CellUnfoldAll", function()cells.unfold_all_cells(cells.get_marker())end, {})
 
 vim.api.nvim_create_user_command("CellSendLine", send.send_line, {})
--- TODO: Need to rewrite for visual mode
--- vim.api.nvim_create_user_command("CellSendVisual", send.send_visual, {})
+vim.api.nvim_create_user_command("CellSendVisual", send.send_visual, {})
 vim.api.nvim_create_user_command("CellSend", send.send_cell, {})
 vim.api.nvim_create_user_command("CellSendAndJump", function()send.send_cell();cells.jump_to_next_cell(cells.get_marker())end, {})
 vim.api.nvim_create_user_command("CellSendFile", send.send_file, {})
