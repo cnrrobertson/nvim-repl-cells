@@ -19,8 +19,21 @@ M.config = {
   },
   markdown = {
     marker = '```',
+  },
+  lua = {
+    marker = '-- %%',
   }
 }
+
+function M.get_marker()
+  local buf_type = vim.o.filetype
+  local buf_info = M.config[buf_type]
+  if (buf_info == nil) or (buf_info.marker == nil) then
+    return M.config.marker
+  else
+    return buf_info.marker
+  end
+end
 
 -----------------------------------
 -- UTILITIES --
