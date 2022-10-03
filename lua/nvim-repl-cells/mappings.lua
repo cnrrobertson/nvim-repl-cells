@@ -28,11 +28,26 @@ function M.set_send_mappings()
     vim.keymap.set('n','<localleader>rf', ':CellSendFile<cr>', {desc="Send file"})
 end
 
+function M.get_repl(buf_info)
+  local repl_str = ""
+  if buf_info.jupyter then
+    if buf_info.kernel ~= nil then
+      repl_str = "jupyter console --kernel "..buf_info.kernel
+    end
+  else
+    if buf_info.repl ~= nil then
+      repl_str = buf_info.repl
+    end
+  end
+  return repl_str
+end
+
 function M.set_filetype_send_mappings()
   local buf_type = vim.o.filetype
   local buf_info = config[buf_type]
-  if (buf_info ~= nil) and (buf_info.repl ~= nil) then
-    vim.keymap.set('n','<localleader>ri', function()send.send_command(buf_info.repl,true,true)end,{desc="Start REPL"})
+  if buf_info ~= nil then
+    local repl_str = M.get_repl(buf_info)
+    vim.keymap.set('n','<localleader>ri', function()send.send_command(repl_str,true,true)end,{desc="Start REPL"})
   end
   if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)

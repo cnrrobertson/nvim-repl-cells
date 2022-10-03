@@ -7,17 +7,23 @@ config = {
   activate_send_cells = true,
   python = {
     marker = '# %%',
+    jupyter = true,
     repl = 'ipython --no-autoindent',
+    kernel = 'python',
     file_send = 'python',
   },
   julia = {
     marker = '# %%',
+    jupyter = true,
     repl = 'julia',
+    kernel = 'julia-1.8',
     file_send = 'julia',
   },
   matlab = {
     marker = '% %%',
+    jupyter = true,
     repl = 'matlab -nosplash -nodesktop',
+    kernel = 'imatlab',
     file_send = 'matlab -nosplash -nodesktop -batch',
   },
   markdown = {
@@ -25,7 +31,9 @@ config = {
   },
   lua = {
     marker = '-- %%',
+    jupyter = false,
     repl = 'lua',
+    kernel = 'ilua',
     file_send = 'lua',
   }
 }
