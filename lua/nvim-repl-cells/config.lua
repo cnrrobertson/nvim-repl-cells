@@ -11,6 +11,8 @@ config = {
     repl = 'ipython --no-autoindent',
     kernel = 'python',
     file_send = 'python',
+    env_cmd = 'conda activate',
+    envs = '~/mambaforge/envs/',
   },
   julia = {
     marker = '# %%',

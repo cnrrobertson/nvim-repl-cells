@@ -55,6 +55,66 @@ function M.set_filetype_send_mappings()
   end
 end
 
+function M.get_envs(buf_info)
+  local envs = {}
+  if buf_info.envs ~= nil then
+    for dirs in io.popen("dir "..buf_info.envs):lines() do
+      for dir in string.gmatch(dirs, "[^%s]+") do
+        table.insert(envs, dir)
+      end
+    end
+    return envs
+  else
+    vim.api.nvim_err_writeln("ERROR: No environment directory set")
+  end
+end
+
+function get_env_symbols(envs)
+  local env_syms = {}
+  -- Check matching first letters, if so, move to length 2 symbols, etc.
+  for i,env1 in pairs(envs) do
+    local sym_len = 1
+    local matches = false
+    local sym1 = ""
+    while matches == false do
+      sym1 = string.sub(env1,1,sym_len)
+      for j,env2 in pairs(envs) do
+        if i ~= j then
+          sym2 = string.sub(env2,1,sym_len)
+          if sym1 == sym2 then
+            matches = true
+          end
+        end
+      end
+      if matches == true then
+        sym_len = sym_len + 1
+        matches = false
+      else
+        matches = true
+      end
+    end
+    table.insert(env_syms, sym1)
+  end
+  return env_syms
+end
+
+function M.set_filetype_env_mappings()
+  local buf_type = vim.o.filetype
+  local buf_info = config[buf_type]
+  if (buf_info ~= nil) and (buf_info.env_cmd ~= nil) then
+    local envs = M.get_envs(buf_info)
+    local env_syms = get_env_symbols(envs)
+    for i,s in pairs(env_syms) do
+      local env = envs[i]
+      local env_str = buf_info.env_cmd.." "..env
+      local env_func = function()
+        send.send_command(env_str,true,true)
+      end
+      vim.keymap.set('n','<localleader>ra'..s, env_func,{desc="Env: activate "..env})
+    end
+  end
+end
+
 function M.set_textobject_mappings()
   vim.keymap.set('x', 'ic', function()cells.visual_select_in_cell(cells.get_marker())end, {desc="inner cell"})
   vim.keymap.set('x', 'ac', function()cells.visual_select_around_cell(cells.get_marker())end, {desc="outer cell"})
