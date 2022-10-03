@@ -9,6 +9,11 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
   - [ ] `%paste -q` for ipython
     - [ ] Also pasting in other terminals, i.e. julia, in specific register
   - [x] language specific REPL commands and flags
+- [ ] textobject support
+  - [x] in cell
+  - [x] around cell
+  - [ ] to cell
+  - [ ] forward to cell
 - [ ] Options flush out
   - [ ] Colors for highlighting
   - [x] Default mappings
@@ -32,4 +37,4 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
   - `vimcmdline`: same
   - `vim-slime`: need to deal with separate process. Could work with the cell convenience commands
   - Example similar: https://www.maxwellrules.com/misc/nvim_jupyter.html
-  - `vim-textobj-hydrogen`: text object for code cells, very similar to this, but not `lua`
+  - `vim-textobj-hydrogen`: text object for code cells, very similar to this, but not `lua`, inspiration
