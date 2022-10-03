@@ -120,6 +120,14 @@ function M.set_textobject_mappings()
   vim.keymap.set('x', 'ac', function()cells.visual_select_around_cell(cells.get_marker())end, {desc="outer cell"})
   vim.keymap.set('o', 'ic', function()cells.visual_select_in_cell(cells.get_marker())end, {desc="inner cell"})
   vim.keymap.set('o', 'ac', function()cells.visual_select_around_cell(cells.get_marker())end, {desc="outer cell"})
+  vim.keymap.set('x', 'tc', function()cells.visual_select_till_cell(cells.get_marker())end, {desc="till cell"})
+  vim.keymap.set('x', 'Tc', function()cells.visual_select_back_till_cell(cells.get_marker())end, {desc="back till cell"})
+  vim.keymap.set('o', 'tc', function()cells.visual_select_till_cell(cells.get_marker())end, {desc="till cell"})
+  vim.keymap.set('o', 'Tc', function()cells.visual_select_back_till_cell(cells.get_marker())end, {desc="back till cell"})
+  vim.keymap.set('x', 'fc', function()cells.visual_select_to_cell(cells.get_marker())end, {desc="to cell"})
+  vim.keymap.set('x', 'Fc', function()cells.visual_select_back_to_cell(cells.get_marker())end, {desc="back to cell"})
+  vim.keymap.set('o', 'fc', function()cells.visual_select_to_cell(cells.get_marker())end, {desc="to cell"})
+  vim.keymap.set('o', 'Fc', function()cells.visual_select_back_to_cell(cells.get_marker())end, {desc="back to cell"})
 end
 
 return M

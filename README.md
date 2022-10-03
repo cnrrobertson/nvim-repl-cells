@@ -12,8 +12,8 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
 - [ ] textobject support
   - [x] in cell
   - [x] around cell
-  - [ ] to cell
-  - [ ] forward to cell
+  - [x] till cell
+  - [x] to cell
 - [ ] Options flush out
   - [ ] Colors for highlighting
   - [x] Default mappings

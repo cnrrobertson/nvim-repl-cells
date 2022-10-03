@@ -72,6 +72,9 @@ function M.get_cell_bounds(start_row, marker)
   return top_row, bot_row
 end
 
+-----------------------------------
+-- TEXTOBJECT SELECTIONS --
+-----------------------------------
 function M.visual_select_in_cell(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row, bot_row = M.get_cell_bounds(start_row, marker)
@@ -88,6 +91,42 @@ function M.visual_select_around_cell(marker)
   vim.fn.setpos(".", { '.', math.max(top_row-1,1), 0, 0 })
   vim.cmd("normal! V")
   vim.fn.setpos(".", { '.', bot_row, 0, 0 })
+end
+
+function M.visual_select_till_cell(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local bot_row = M.get_cell_bottom(start_row, marker)
+  vim.cmd("normal! ")
+  vim.fn.setpos(".", { '.', start_row, 0, 0 })
+  vim.cmd("normal! V")
+  vim.fn.setpos(".", { '.', bot_row, 0, 0 })
+end
+
+function M.visual_select_back_till_cell(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local top_row = M.get_cell_top(start_row, marker)
+  vim.cmd("normal! ")
+  vim.fn.setpos(".", { '.', start_row, 0, 0 })
+  vim.cmd("normal! V")
+  vim.fn.setpos(".", { '.', math.max(top_row,1), 0, 0 })
+end
+
+function M.visual_select_to_cell(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local bot_row = M.get_cell_bottom(start_row, marker)
+  vim.cmd("normal! ")
+  vim.fn.setpos(".", { '.', start_row, 0, 0 })
+  vim.cmd("normal! V")
+  vim.fn.setpos(".", { '.', bot_row+1, 0, 0 })
+end
+
+function M.visual_select_back_to_cell(marker)
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local top_row = M.get_cell_top(start_row, marker)
+  vim.cmd("normal! ")
+  vim.fn.setpos(".", { '.', start_row, 0, 0 })
+  vim.cmd("normal! V")
+  vim.fn.setpos(".", { '.', math.max(top_row-1,1), 0, 0 })
 end
 
 -----------------------------------
