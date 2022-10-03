@@ -13,7 +13,7 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
   - [ ] Colors for highlighting
   - [x] Default mappings
 - [ ] Additional cell options
-  - [ ] Merge cells
+  - [x] Merge cells
   - [ ] Convert to markdown
 - [ ] Fill out this README with overview of workflow that it supports and other alternative plugins
   - `jupytext.vim`: how it works well with this for jupyter notebooks

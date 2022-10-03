@@ -15,15 +15,13 @@ function M.get_marker()
   end
 end
 
-function M.get_cell_bounds(start_row, marker)
+function M.get_cell_top(start_row, marker)
   -- Change string to Lua regex pattern format
   local pattern = string.gsub(marker, "%%", "%%%%")
-  local buf_len = vim.api.nvim_buf_line_count(0)
-
+  
   local top_row = nil
   local row_num = start_row
-  while(top_row == nil)
-  do
+  while(top_row == nil) do
     local temp_row = vim.api.nvim_buf_get_lines(0, row_num-1, row_num, false)[1]
     if(string.find(temp_row, pattern) == 1)
     then
@@ -36,15 +34,23 @@ function M.get_cell_bounds(start_row, marker)
       end
     end
   end
+  return top_row
+end
+
+function M.get_cell_bottom(start_row, marker)
+  -- Change string to Lua regex pattern format
+  local pattern = string.gsub(marker, "%%", "%%%%")
+
+  local buf_len = vim.api.nvim_buf_line_count(0)
   local bot_row = nil
+  local row_num = start_row
   if(start_row ~= buf_len)
   then
     row_num = start_row+1
   else
     row_num = start_row
   end
-  while(bot_row == nil)
-  do
+  while(bot_row == nil) do
     local temp_row = vim.api.nvim_buf_get_lines(0, row_num-1, row_num, false)[1]
     if(string.find(temp_row, pattern) == 1)
     then
@@ -57,6 +63,12 @@ function M.get_cell_bounds(start_row, marker)
       end
     end
   end
+  return bot_row
+end
+
+function M.get_cell_bounds(start_row, marker)
+  local top_row = M.get_cell_top(start_row, marker)
+  local bot_row = M.get_cell_bottom(start_row, marker)
   return top_row, bot_row
 end
 
@@ -90,7 +102,7 @@ end
 
 function M.insert_cell_above(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local top_row, _ = M.get_cell_bounds(start_row, marker)
+  local top_row = M.get_cell_top(start_row, marker)
   vim.api.nvim_buf_set_lines(0, top_row-1, top_row-1, false, {"", "", marker})
   vim.api.nvim_win_set_cursor(0, {top_row, 0})
   M.highlight_cells(marker)
@@ -98,7 +110,7 @@ end
 
 function M.insert_cell_below(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local _, bot_row = M.get_cell_bounds(start_row, marker)
+  local bot_row = M.get_cell_bottom(start_row, marker)
   vim.api.nvim_buf_set_lines(0, bot_row, bot_row, false, {"", marker, "", ""})
   vim.api.nvim_win_set_cursor(0, {bot_row+3, 0})
   M.highlight_cells(marker)
@@ -125,7 +137,7 @@ end
 function M.merge_cell_below(marker)
   local buf_len = vim.api.nvim_buf_line_count(0)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local _, bot_row = M.get_cell_bounds(start_row, marker)
+  local bot_row = M.get_cell_bottom(start_row, marker)
   if bot_row == buf_len then
     return
   end
@@ -135,7 +147,7 @@ end
 
 function M.merge_cell_above(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local top_row, _ = M.get_cell_bounds(start_row, marker)
+  local top_row = M.get_cell_top(start_row, marker)
   if top_row == 1 then
     return
   end
@@ -148,7 +160,7 @@ end
 -----------------------------------
 function M.jump_to_next_cell(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local _, bot_row = M.get_cell_bounds(start_row, marker)
+  local bot_row = M.get_cell_bottom(start_row, marker)
   local buf_len = vim.api.nvim_buf_line_count(0)
   if(bot_row ~= buf_len)
   then
@@ -158,10 +170,10 @@ end
 
 function M.jump_to_previous_cell(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local top_row, _ = M.get_cell_bounds(start_row, marker)
+  local top_row = M.get_cell_top(start_row, marker)
   if(top_row ~= 1)
   then
-    local new_top_row, _ = M.get_cell_bounds(top_row-2, marker)
+    local new_top_row = M.get_cell_top(top_row-2, marker)
     vim.api.nvim_win_set_cursor(0, {new_top_row, 0})
   end
 end
@@ -232,7 +244,7 @@ end
 
 function M.toggle_cell_fold(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
-  local _, bot_row = M.get_cell_bounds(start_row, marker)
+  local bot_row = M.get_cell_bottom(start_row, marker)
   if vim.fn.foldclosed(bot_row) == -1
   then
     M.fold_cell(start_row, marker)
@@ -257,7 +269,8 @@ function M.fold_cell(row,marker)
 end
 
 function M.unfold_cell(row,marker)
-  local _, bot_row = M.get_cell_bounds(row, marker)
+  -- Use bottom row of cell to determine fold status as it is often a blank line
+  local bot_row = M.get_cell_bottom(row, marker)
   vim.api.nvim_command(":"..tostring(bot_row).."foldopen")
 end
 
