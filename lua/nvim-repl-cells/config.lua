@@ -7,7 +7,7 @@ config = {
   activate_send_cells = true,
   python = {
     marker = '# %%',
-    jupyter = true,
+    jupyter = false,
     repl = 'ipython --no-autoindent',
     kernel = 'python',
     file_send = 'python',
@@ -16,14 +16,14 @@ config = {
   },
   julia = {
     marker = '# %%',
-    jupyter = true,
+    jupyter = false,
     repl = 'julia',
     kernel = 'julia-1.8',
     file_send = 'julia',
   },
   matlab = {
     marker = '% %%',
-    jupyter = true,
+    jupyter = false,
     repl = 'matlab -nosplash -nodesktop',
     kernel = 'imatlab',
     file_send = 'matlab -nosplash -nodesktop -batch',
