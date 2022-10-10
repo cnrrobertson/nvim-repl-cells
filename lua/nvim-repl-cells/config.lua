@@ -1,31 +1,28 @@
 config = {
   marker = '# %%',
   highlight = true,
-  autofold = true,
+  autofold = false,
   foldtext = true,
   default_mappings = true,
   activate_send_cells = true,
   python = {
     marker = '# %%',
-    jupyter = false,
     repl = 'ipython --no-autoindent',
-    kernel = 'python',
+    -- repl = 'jupyter console --kernel=python --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'python',
     env_cmd = 'conda activate',
     envs = '~/mambaforge/envs/',
   },
   julia = {
     marker = '# %%',
-    jupyter = false,
     repl = 'julia',
-    kernel = 'julia-1.8',
+    -- repl = 'jupyter console --kernel=julia-1.8 --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'julia',
   },
   matlab = {
     marker = '% %%',
-    jupyter = false,
     repl = 'matlab -nosplash -nodesktop',
-    kernel = 'imatlab',
+    -- repl = 'jupyter console --kernel=imatlab --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'matlab -nosplash -nodesktop -batch',
   },
   markdown = {
@@ -33,9 +30,8 @@ config = {
   },
   lua = {
     marker = '-- %%',
-    jupyter = false,
     repl = 'lua',
-    kernel = 'ilua',
+    -- repl = 'jupyter console --kernel=ilua --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'lua',
   }
 }
