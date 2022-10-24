@@ -1,6 +1,8 @@
 local M = {}
 local vim = vim
 local tt = require('toggleterm')
+local tterm = require('toggleterm.terminal')
+local tui = require('toggleterm.ui')
 local cells = require('nvim-repl-cells')
 
 -------------------------------------------------------------------------------
@@ -69,6 +71,22 @@ function M.send_cell()
   local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
   local top_row, bot_row = cells.get_cell_bounds(b_line, cells.get_marker())
   M.send_lines(bufnum, top_row, bot_row)
+end
+
+function M.yank_and_put_cell()
+  local bufnum = vim.fn.bufnr()
+  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
+  local top_row, bot_row = cells.get_cell_bounds(b_line, cells.get_marker())
+  vim.cmd(tostring(top_row)..","..tostring(bot_row).."yank z")
+  local term = tterm.get_or_create_term(bufnum,nil,M.get_dir())
+  tui.update_origin_window(term.window)
+  if term:is_open() == false then
+    term:open(vim.o.lines*0.4,'horizontal') -- TODO: Need to get correct config for size,direction on toggleterm
+  else
+    term:focus()
+  end
+  vim.cmd("put z")
+  tt.exec("",bufnum,nil,M.get_dir())
 end
 
 function M.send_visual()
