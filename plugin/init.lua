@@ -33,17 +33,18 @@ vim.api.nvim_create_user_command("ToggleBufTerm", send.toggle, {})
 mappings.set_general_mappings()
 mappings.set_send_mappings()
 mappings.set_textobject_mappings()
-vim.api.nvim_create_autocmd({"BufEnter"}, {pattern={"*"},callback=mappings.set_filetype_send_mappings})
-vim.api.nvim_create_autocmd({"BufEnter"}, {pattern={"*"},callback=mappings.set_filetype_env_mappings})
+vim.api.nvim_create_augroup("ReplCells",{clear=true})
+vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=mappings.set_filetype_send_mappings})
+vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=mappings.set_filetype_env_mappings})
 
 -------------------------------------------------------------------------------
 -- Autocommands
 -------------------------------------------------------------------------------
 if config.highlight == true then
-  vim.api.nvim_create_autocmd({"BufWrite","BufEnter"}, {pattern={"*"}, callback=function()cells.highlight_cells(cells.get_marker())end})
+  vim.api.nvim_create_autocmd({"BufWrite","BufEnter"},{group="ReplCells",pattern={"*"},callback=function()cells.highlight_cells(cells.get_marker())end})
 end
 if config.autofold == true then
-  vim.api.nvim_create_autocmd({"SessionLoadPost","BufReadPost"}, {pattern={"*"}, callback=function()cells.fold_all_cells(cells.get_marker())end})
+  vim.api.nvim_create_autocmd({"SessionLoadPost","BufReadPost"},{group="ReplCells",pattern={"*"},callback=function()cells.fold_all_cells(cells.get_marker())end})
 end
 if config.foldtext == true then
   cells.set_foldtext()
