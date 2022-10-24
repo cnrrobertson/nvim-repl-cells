@@ -25,7 +25,7 @@ function M.set_send_mappings()
   vim.keymap.set('v','<localleader>r',':<c-u>CellSendVisual<cr>',{desc="Send visual"})
   vim.keymap.set('n','<localleader>ee', ':CellSend<cr>',{desc="Send cell"})
   vim.keymap.set('n','<localleader>re', ':CellSendAndJump<cr>',{desc="Send cell and jump"})
-    vim.keymap.set('n','<localleader>rf', ':CellSendFile<cr>', {desc="Send file"})
+  vim.keymap.set('n','<localleader>rf', ':CellSendFile<cr>', {desc="Send file"})
 end
 
 function M.set_filetype_send_mappings()
@@ -33,11 +33,11 @@ function M.set_filetype_send_mappings()
   local buf_info = config[buf_type]
   if (buf_info ~= nil) and (buf_info.repl ~= nil) then
     local repl_str = buf_info.repl
-    vim.keymap.set('n','<localleader>ri', function()send.send_command(repl_str,true,true)end,{desc="Start REPL"})
+    vim.keymap.set('n','<localleader>ri', function()send.send_command(repl_str,true,true)end,{desc="Start REPL",buffer=true})
   end
   if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
-    vim.keymap.set('n','<localleader>rF', function()send.send_command(command,true,true)end,{desc="Run file in terminal"})
+    vim.keymap.set('n','<localleader>rF', function()send.send_command(command,true,true)end,{desc="Run file in terminal",buffer=true})
   end
 end
 
@@ -96,7 +96,7 @@ function M.set_filetype_env_mappings()
       local env_func = function()
         send.send_command(env_str,true,true)
       end
-      vim.keymap.set('n','<localleader>ra'..s, env_func,{desc="Env: activate "..env})
+      vim.keymap.set('n','<localleader>ra'..s, env_func,{desc="Env: activate "..env,buffer=true})
     end
   end
 end
