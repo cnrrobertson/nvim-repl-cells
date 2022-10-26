@@ -16,6 +16,7 @@ function M.get_marker()
 end
 
 function M.get_cell_top(start_row, marker)
+  local marker = marker or M.get_marker()
   -- Change string to Lua regex pattern format
   local pattern = string.gsub(marker, "%%", "%%%%")
   
@@ -38,6 +39,7 @@ function M.get_cell_top(start_row, marker)
 end
 
 function M.get_cell_bottom(start_row, marker)
+  local marker = marker or M.get_marker()
   -- Change string to Lua regex pattern format
   local pattern = string.gsub(marker, "%%", "%%%%")
 
@@ -67,6 +69,7 @@ function M.get_cell_bottom(start_row, marker)
 end
 
 function M.get_cell_bounds(start_row, marker)
+  local marker = marker or M.get_marker()
   local top_row = M.get_cell_top(start_row, marker)
   local bot_row = M.get_cell_bottom(start_row, marker)
   return top_row, bot_row
@@ -76,6 +79,7 @@ end
 -- TEXTOBJECT SELECTIONS --
 -----------------------------------
 function M.visual_select_in_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row, bot_row = M.get_cell_bounds(start_row, marker)
   vim.cmd("normal! ")
@@ -85,6 +89,7 @@ function M.visual_select_in_cell(marker)
 end
 
 function M.visual_select_around_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row, bot_row = M.get_cell_bounds(start_row, marker)
   vim.cmd("normal! ")
@@ -94,6 +99,7 @@ function M.visual_select_around_cell(marker)
 end
 
 function M.visual_select_till_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local bot_row = M.get_cell_bottom(start_row, marker)
   vim.cmd("normal! ")
@@ -103,6 +109,7 @@ function M.visual_select_till_cell(marker)
 end
 
 function M.visual_select_back_till_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row = M.get_cell_top(start_row, marker)
   vim.cmd("normal! ")
@@ -112,6 +119,7 @@ function M.visual_select_back_till_cell(marker)
 end
 
 function M.visual_select_to_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local bot_row = M.get_cell_bottom(start_row, marker)
   vim.cmd("normal! ")
@@ -121,6 +129,7 @@ function M.visual_select_to_cell(marker)
 end
 
 function M.visual_select_back_to_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row = M.get_cell_top(start_row, marker)
   vim.cmd("normal! ")
@@ -133,6 +142,7 @@ end
 -- ADDING/REMOVING CELLS --
 -----------------------------------
 function M.insert_cell_here(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   vim.api.nvim_buf_set_lines(0, start_row-1, start_row-1, false, {marker})
   vim.api.nvim_win_set_cursor(0, {start_row+1, 0})
@@ -140,6 +150,7 @@ function M.insert_cell_here(marker)
 end
 
 function M.insert_cell_above(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row = M.get_cell_top(start_row, marker)
   vim.api.nvim_buf_set_lines(0, top_row-1, top_row-1, false, {"", "", marker})
@@ -148,6 +159,7 @@ function M.insert_cell_above(marker)
 end
 
 function M.insert_cell_below(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local bot_row = M.get_cell_bottom(start_row, marker)
   vim.api.nvim_buf_set_lines(0, bot_row, bot_row, false, {"", marker, "", ""})
@@ -156,6 +168,7 @@ function M.insert_cell_below(marker)
 end
 
 function M.delete_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row, bot_row = M.get_cell_bounds(start_row, marker)
   if(top_row ~= 1)
@@ -167,6 +180,7 @@ function M.delete_cell(marker)
 end
 
 function M.split_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   vim.api.nvim_buf_set_lines(0, start_row, start_row, false, { "", marker, ""})
   vim.api.nvim_win_set_cursor(0, {start_row+3, 0})
@@ -174,6 +188,7 @@ function M.split_cell(marker)
 end
 
 function M.merge_cell_below(marker)
+  local marker = marker or M.get_marker()
   local buf_len = vim.api.nvim_buf_line_count(0)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local bot_row = M.get_cell_bottom(start_row, marker)
@@ -185,6 +200,7 @@ function M.merge_cell_below(marker)
 end
 
 function M.merge_cell_above(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row = M.get_cell_top(start_row, marker)
   if top_row == 1 then
@@ -198,6 +214,7 @@ end
 -- NAVIGATING CELLS --
 -----------------------------------
 function M.jump_to_next_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local bot_row = M.get_cell_bottom(start_row, marker)
   local buf_len = vim.api.nvim_buf_line_count(0)
@@ -208,6 +225,7 @@ function M.jump_to_next_cell(marker)
 end
 
 function M.jump_to_previous_cell(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row = M.get_cell_top(start_row, marker)
   if(top_row ~= 1)
@@ -221,6 +239,7 @@ end
 -- MOVING CELLS --
 -----------------------------------
 function M.move_cell_down(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local buf_len = vim.api.nvim_buf_line_count(0)
   local top_row1, bot_row1 = M.get_cell_bounds(start_row, marker)
@@ -241,6 +260,7 @@ function M.move_cell_down(marker)
 end
 
 function M.move_cell_up(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local top_row2, bot_row2 = M.get_cell_bounds(start_row, marker)
   local start_pos = start_row-top_row2
@@ -263,6 +283,7 @@ end
 -----------------------------------
 
 function M.highlight_cells(marker)
+  local marker = marker or M.get_marker()
   local buf_len = vim.api.nvim_buf_line_count(0)
   local current_row = 1
   local ns_id = vim.api.nvim_create_namespace('cells')
@@ -282,6 +303,7 @@ function M.highlight_cells(marker)
 end
 
 function M.toggle_cell_fold(marker)
+  local marker = marker or M.get_marker()
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   local bot_row = M.get_cell_bottom(start_row, marker)
   if vim.fn.foldclosed(bot_row) == -1
@@ -293,6 +315,7 @@ function M.toggle_cell_fold(marker)
 end
 
 function M.fold_cell(row,marker)
+  local marker = marker or M.get_marker()
   local top_row, bot_row = M.get_cell_bounds(row, marker)
   if vim.fn.foldlevel(row) == 0
   then
@@ -308,12 +331,14 @@ function M.fold_cell(row,marker)
 end
 
 function M.unfold_cell(row,marker)
+  local marker = marker or M.get_marker()
   -- Use bottom row of cell to determine fold status as it is often a blank line
   local bot_row = M.get_cell_bottom(row, marker)
   vim.api.nvim_command(":"..tostring(bot_row).."foldopen")
 end
 
 function M.fold_all_cells(marker)
+  local marker = marker or M.get_marker()
   local buf_len = vim.api.nvim_buf_line_count(0)
   local current_row = 1
   local top_row, bot_row = M.get_cell_bounds(current_row, marker)
@@ -330,6 +355,7 @@ function M.fold_all_cells(marker)
 end
 
 function M.unfold_all_cells(marker)
+  local marker = marker or M.get_marker()
   local buf_len = vim.api.nvim_buf_line_count(0)
   local current_row = 1
   local top_row, bot_row = M.get_cell_bounds(current_row, marker)
