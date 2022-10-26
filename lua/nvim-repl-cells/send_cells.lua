@@ -42,6 +42,7 @@ end
 -------------------------------------------------------------------------------
 -- Send commands
 -------------------------------------------------------------------------------
+-- Send lines style
 function M.send_line()
   local id = {args=vim.fn.bufnr()}
   tt.send_lines_to_terminal("single_line",true,id)
@@ -73,22 +74,6 @@ function M.send_cell()
   M.send_lines(bufnum, top_row, bot_row)
 end
 
-function M.yank_and_put_cell()
-  local bufnum = vim.fn.bufnr()
-  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
-  local top_row, bot_row = cells.get_cell_bounds(b_line, cells.get_marker())
-  vim.cmd(tostring(top_row)..","..tostring(bot_row).."yank z")
-  local term = tterm.get_or_create_term(bufnum,nil,M.get_dir())
-  tui.update_origin_window(term.window)
-  if term:is_open() == false then
-    term:open(vim.o.lines*0.4,'horizontal') -- TODO: Need to get correct config for size,direction on toggleterm
-  else
-    term:focus()
-  end
-  vim.cmd("put z")
-  tt.exec("",bufnum,nil,M.get_dir())
-end
-
 function M.send_visual()
   local bufnum = vim.fn.bufnr()
   local start_line, _ = table.unpack(vim.fn.getpos("'<"), 2, 3)
@@ -98,6 +83,48 @@ end
 
 function M.send_command(command,go_back,display)
   tt.exec(command,vim.fn.bufnr(),nil,M.get_dir(),nil,go_back,display)
+end
+
+-- Yank and put style
+function M.put_lines(bufnum,register)
+  local term = tterm.get_or_create_term(bufnum,nil,M.get_dir())
+  tui.update_origin_window(term.window)
+  if term:is_open() == false then
+    term:open(vim.o.lines*0.4,term.direction) -- TODO: Need to get correct config for size
+  else
+    term:focus()
+  end
+  vim.cmd("put "..register)
+  -- extra line to execute
+  tt.exec("",bufnum,nil,M.get_dir())
+end
+
+function M.put_line(register)
+  local bufnum = vim.fn.bufnr()
+  vim.cmd("yank "..register)
+  M.put_lines(bufnum,register)
+end
+
+function M.put_cell(register)
+  local bufnum = vim.fn.bufnr()
+  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
+  local top_row, bot_row = cells.get_cell_bounds(b_line, cells.get_marker())
+  vim.cmd(tostring(top_row)..","..tostring(bot_row).."yank "..register)
+  M.put_lines(bufnum,register)
+end
+
+function M.put_visual(register)
+  local bufnum = vim.fn.bufnr()
+  vim.cmd("'<,'>yank "..register)
+  M.put_lines(bufnum, register)
+end
+
+function M.put_file(register)
+  local bufnum = vim.fn.bufnr()
+  local top_row = 1
+  local bot_row = vim.api.nvim_buf_line_count(0)
+  vim.cmd(tostring(top_row)..","..tostring(bot_row).."yank "..register)
+  M.put_lines(bufnum, register)
 end
 
 return M

@@ -21,11 +21,17 @@ function M.set_general_mappings()
 end
 
 function M.set_send_mappings()
-  vim.keymap.set('n','<localleader>rr', ':CellSendLine<cr>',{desc="Send line"})
-  vim.keymap.set('v','<localleader>r',':<c-u>CellSendVisual<cr>',{desc="Send visual"})
-  vim.keymap.set('n','<localleader>ee', ':CellSend<cr>',{desc="Send cell"})
-  vim.keymap.set('n','<localleader>re', ':CellSendAndJump<cr>',{desc="Send cell and jump"})
-  vim.keymap.set('n','<localleader>rf', ':CellSendFile<cr>', {desc="Send file"})
+  vim.keymap.set('n','<localleader>rsr', ':CellSendLine<cr>',{desc="Send line"})
+  vim.keymap.set('v','<localleader>rs',':<c-u>CellSendVisual<cr>',{desc="Send visual"})
+  vim.keymap.set('n','<localleader>ese', ':CellSend<cr>',{desc="Send cell"})
+  vim.keymap.set('n','<localleader>rse', ':CellSendAndJump<cr>',{desc="Send cell and jump"})
+  vim.keymap.set('n','<localleader>rsf', ':CellSendFile<cr>', {desc="Send file"})
+
+  vim.keymap.set('n','<localleader>rr', ':CellPutLine<cr>',{desc="Yank and put line"})
+  vim.keymap.set('v','<localleader>r',':<c-u>CellPutVisual<cr>',{desc="Yank and put visual"})
+  vim.keymap.set('n','<localleader>ee', ':CellPut<cr>',{desc="Yank and put cell"})
+  vim.keymap.set('n','<localleader>re', ':CellPutAndJump<cr>',{desc="Yank and put cell and jump"})
+  vim.keymap.set('n','<localleader>rf', ':CellPutFile<cr>', {desc="Yank and put file"})
 end
 
 function M.set_filetype_send_mappings()

@@ -5,6 +5,7 @@ config = {
   foldtext = true,
   default_mappings = true,
   activate_send_cells = true,
+  cell_register = "z",
   python = {
     marker = '# %%',
     repl = 'ipython --no-autoindent',

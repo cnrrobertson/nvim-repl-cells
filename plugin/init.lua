@@ -25,6 +25,12 @@ vim.api.nvim_create_user_command("CellSend", send.send_cell, {})
 vim.api.nvim_create_user_command("CellSendAndJump", function()send.send_cell();cells.jump_to_next_cell(cells.get_marker())end, {})
 vim.api.nvim_create_user_command("CellSendFile", send.send_file, {})
 
+vim.api.nvim_create_user_command("CellPutLine", function()send.put_line(config.cell_register)end, {})
+vim.api.nvim_create_user_command("CellPutVisual", function()send.put_visual(config.cell_register)end, {})
+vim.api.nvim_create_user_command("CellPut", function()send.put_cell(config.cell_register)end, {})
+vim.api.nvim_create_user_command("CellPutAndJump", function()send.put_cell(config.cell_register);cells.jump_to_next_cell(cells.get_marker())end, {})
+vim.api.nvim_create_user_command("CellPutFile", function()send.put_file(config.cell_register)end, {})
+
 vim.api.nvim_create_user_command("ToggleBufTerm", send.toggle, {})
 
 -------------------------------------------------------------------------------
