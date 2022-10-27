@@ -95,8 +95,12 @@ function M.put_lines(bufnum,register)
     term:focus()
   end
   vim.cmd("put "..register)
-  -- extra line to execute
+  -- extra line (or two) to execute
   tt.exec("",bufnum,nil,M.get_dir())
+  local reg_contents = vim.fn.getreginfo(register).regcontents
+  if reg_contents[#reg_contents] ~= "" then
+    tt.exec("",bufnum,nil,M.get_dir())
+  end
 end
 
 function M.put_line(register)
