@@ -27,11 +27,12 @@ function M.set_send_mappings()
   vim.keymap.set('n','<localleader>rse',function()send.send_cell();cells.jump_to_next_cell()end,{desc="Send cell and jump"})
   vim.keymap.set('n','<localleader>rsf',send.send_file, {desc="Send file"})
 
-  vim.keymap.set('n','<localleader>rr',send.put_line,{desc="Yank and put line"})
-  vim.keymap.set('v','<localleader>r',send.put_visual,{desc="Yank and put visual"})
-  vim.keymap.set('n','<localleader>ee',send.put_cell,{desc="Yank and put cell"})
-  vim.keymap.set('n','<localleader>re',function()send.put_cell();cells.jump_to_next_cell()end,{desc="Yank and put cell and jump"})
-  vim.keymap.set('n','<localleader>rf',send.put_file, {desc="Yank and put file"})
+  vim.keymap.set('n','<localleader>rr',function()send.put_line(config.cell_register)end,{desc="Yank and put line"})
+  -- vim.keymap.set('v','<localleader>r',function()send.put_visual(config.cell_register)end,{desc="Yank and put visual"}) -- FIXME: Delayed for some reason. Puts last yank
+  vim.keymap.set('v','<localleader>r',':<c-w>CellPutVisual<cr>',{desc="Yank and put visual"})
+  vim.keymap.set('n','<localleader>ee',function()send.put_cell(config.cell_register)end,{desc="Yank and put cell"})
+  vim.keymap.set('n','<localleader>re',function()send.put_cell(config.cell_register);cells.jump_to_next_cell()end,{desc="Yank and put cell and jump"})
+  vim.keymap.set('n','<localleader>rf',function()send.put_file(config.cell_register)end, {desc="Yank and put file"})
 end
 
 function M.set_filetype_send_mappings()
