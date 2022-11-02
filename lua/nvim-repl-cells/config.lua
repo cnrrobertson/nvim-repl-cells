@@ -144,20 +144,22 @@ end
 function M.set_default_repl_mappings()
   local user_config = require("nvim-repl-cells").config
   vim.keymap.set('n','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
+  vim.keymap.set('t','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
   vim.keymap.set('n','<localleader>r',function()end,{desc="REPL"})
-  vim.keymap.set('n','<localleader>rsr',repl.send_line,{desc="Send line"})
+
+  vim.keymap.set('n','<localleader>rr',function()repl.put_line(user_config.cell_register)end,{desc="Yank-Put line"})
+  -- vim.keymap.set('v','<localleader>r',function()repl.put_visual(config.cell_register)end,{desc="Yank-Put visual"}) -- FIXME: Delayed for some reason. Puts last yank
+  vim.keymap.set('v','<localleader>r',':<c-w>CellPutVisual<cr>',{desc="Yank-Put visual"})
+  vim.keymap.set('n','<localleader>rE',function()repl.put_cell(user_config.cell_register)end,{desc="Yank-Put cell"})
+  vim.keymap.set('n','<localleader>re',function()repl.put_cell(user_config.cell_register);cells.jump_to_next_cell()end,{desc="Yank-Put cell and jump"})
+  vim.keymap.set('n','<localleader>rf',function()repl.put_file(user_config.cell_register)end, {desc="Yank-Put file"})
+
+  vim.keymap.set('n','<localleader>rs',function()end,{desc="Send"})
   vim.keymap.set('n','<localleader>rsr',repl.send_line,{desc="Send line"})
   vim.keymap.set('v','<localleader>rs',repl.send_visual,{desc="Send visual"})
-  vim.keymap.set('n','<localleader>ese',repl.send_cell,{desc="Send cell"})
+  vim.keymap.set('n','<localleader>rsE',repl.send_cell,{desc="Send cell"})
   vim.keymap.set('n','<localleader>rse',function()repl.send_cell();cells.jump_to_next_cell()end,{desc="Send cell and jump"})
   vim.keymap.set('n','<localleader>rsf',repl.send_file, {desc="Send file"})
-
-  vim.keymap.set('n','<localleader>rr',function()repl.put_line(user_config.cell_register)end,{desc="Yank and put line"})
-  -- vim.keymap.set('v','<localleader>r',function()repl.put_visual(config.cell_register)end,{desc="Yank and put visual"}) -- FIXME: Delayed for some reason. Puts last yank
-  vim.keymap.set('v','<localleader>r',':<c-w>CellPutVisual<cr>',{desc="Yank and put visual"})
-  vim.keymap.set('n','<localleader>ee',function()repl.put_cell(user_config.cell_register)end,{desc="Yank and put cell"})
-  vim.keymap.set('n','<localleader>re',function()repl.put_cell(user_config.cell_register);cells.jump_to_next_cell()end,{desc="Yank and put cell and jump"})
-  vim.keymap.set('n','<localleader>rf',function()repl.put_file(user_config.cell_register)end, {desc="Yank and put file"})
 end
 
 function M.set_default_filetype_repl_mappings()
