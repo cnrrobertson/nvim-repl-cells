@@ -12,9 +12,6 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
   - [ ] Colors for highlighting
   - [x] Default mappings
   - [ ] Setup function
-- [ ] Additional cell options
-  - [x] Merge cells
-  - [ ] Convert to markdown (like vim-ipython-cell)
 - [ ] Additional terminal functionality
   - [ ] Name buffer terminals buffer name
   - [ ] Show or don't show terminal on send commands

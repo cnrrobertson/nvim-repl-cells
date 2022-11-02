@@ -210,6 +210,20 @@ function M.merge_cell_above(marker)
   M.highlight_cells(marker)
 end
 
+function M.convert_cell_to_markdown(marker)
+  local marker = marker or M.get_marker()
+  local start_row = vim.api.nvim_win_get_cursor(0)[1]
+  local top_row = M.get_cell_top(start_row, marker)
+  if top_row == 1 then
+    local top_line = vim.api.nvim_buf_get_lines(0, top_row-1, top_row, false)
+    vim.pretty_print(top_line)
+    vim.api.nvim_buf_set_lines(0, top_row-1, top_row, false, {marker.." [markdown]",top_line[1]})
+  else
+    vim.api.nvim_buf_set_lines(0, top_row-2, top_row-1, false, {marker.." [markdown]"})
+  end
+  M.highlight_cells(marker)
+end
+
 -----------------------------------
 -- NAVIGATING CELLS --
 -----------------------------------
