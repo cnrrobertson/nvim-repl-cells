@@ -1,15 +1,26 @@
-config = {
+local M = {}
+local cells = require("nvim-repl-cells.cells")
+local repl = require("nvim-repl-cells.repl")
+local vim = vim
+
+M.defaults = {
+  -- Cells
+  set_user_commands = true,
   marker = '# %%',
   highlight = true,
   autofold = false,
-  foldtext = true,
-  default_mappings = true,
-  activate_send_cells = true,
+  textobject = "c",
+  default_mappings = false,
+
+  -- REPL
+  activate_repl = false,
+  default_repl_mappings = false,
   cell_register = "z",
+
+  -- Filetype specific
   python = {
     marker = '# %%',
     repl = 'ipython --no-autoindent',
-    -- repl = 'jupyter console --kernel=python --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'python',
     env_cmd = 'conda activate',
     envs = '~/mambaforge/envs/',
@@ -17,13 +28,11 @@ config = {
   julia = {
     marker = '# %%',
     repl = 'julia',
-    -- repl = 'jupyter console --kernel=julia-1.8 --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'julia',
   },
   matlab = {
     marker = '% %%',
     repl = 'matlab -nosplash -nodesktop',
-    -- repl = 'jupyter console --kernel=imatlab --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'matlab -nosplash -nodesktop -batch',
   },
   markdown = {
@@ -32,9 +41,177 @@ config = {
   lua = {
     marker = '-- %%',
     repl = 'lua',
-    -- repl = 'jupyter console --kernel=ilua --ZMQTerminalInteractiveShell.autoindent=False --ZMQTerminalInteractiveShell.true_color=True',
     file_send = 'lua',
   }
 }
 
-return config
+-------------------------------------------------------------------------------
+-- Commands
+-------------------------------------------------------------------------------
+function M.set_user_commands()
+  vim.api.nvim_create_user_command("CellVisualSelect", function()cells.visual_select_in_cell()end, {})
+  vim.api.nvim_create_user_command("CellVisualSelectIn", function()cells.visual_select_in_cell()end, {})
+  vim.api.nvim_create_user_command("CellVisualSelectAround", function()cells.visual_select_around_cell()end, {})
+  vim.api.nvim_create_user_command("CellInsertAbove", function()cells.insert_cell_above()end, {})
+  vim.api.nvim_create_user_command("CellInsertBelow", function()cells.insert_cell_below()end, {})
+  vim.api.nvim_create_user_command("CellInsertHere", function()cells.insert_cell_here()end, {})
+  vim.api.nvim_create_user_command("CellDelete", function()cells.delete_cell()end, {})
+  vim.api.nvim_create_user_command("CellSplit", function()cells.split_cell()end, {})
+  vim.api.nvim_create_user_command("CellMergeAbove", function()cells.merge_cell_above()end, {})
+  vim.api.nvim_create_user_command("CellMergeBelow", function()cells.merge_cell_below()end, {})
+  vim.api.nvim_create_user_command("CellJumpToNext", function()cells.jump_to_next_cell()end, {})
+  vim.api.nvim_create_user_command("CellJumpToPrevious", function()cells.jump_to_previous_cell()end, {})
+  vim.api.nvim_create_user_command("CellToggleFold", function()cells.toggle_cell_fold()end, {})
+  vim.api.nvim_create_user_command("CellFoldAll", function()cells.fold_all_cells()end, {})
+  vim.api.nvim_create_user_command("CellUnfoldAll", function()cells.unfold_all_cells()end, {})
+end
+
+function M.set_repl_user_commands()
+  local user_config = require("nvim-repl-cells").config
+  vim.api.nvim_create_user_command("CellSendLine", function()repl.send_line()end, {})
+  vim.api.nvim_create_user_command("CellSendVisual", function()repl.send_visual()end, {range=true})
+  vim.api.nvim_create_user_command("CellSend", function()repl.send_cell()end, {})
+  vim.api.nvim_create_user_command("CellSendAndJump", function()repl.send_cell();cells.jump_to_next_cell()end, {})
+  vim.api.nvim_create_user_command("CellSendFile", function()repl.send_file()end, {})
+
+  vim.api.nvim_create_user_command("CellPutLine", function()repl.put_line(user_config.cell_register)end, {})
+  vim.api.nvim_create_user_command("CellPutVisual", function()repl.put_visual(user_config.cell_register)end, {range=true})
+  vim.api.nvim_create_user_command("CellPut", function()repl.put_cell(user_config.cell_register)end, {})
+  vim.api.nvim_create_user_command("CellPutAndJump", function()repl.put_cell(user_config.cell_register);cells.jump_to_next_cell()end, {})
+  vim.api.nvim_create_user_command("CellPutFile", function()repl.put_file(user_config.cell_register)end, {})
+
+  vim.api.nvim_create_user_command("ToggleBufTerm", function()repl.toggle()end, {})
+end
+
+-------------------------------------------------------------------------------
+-- Mappings
+-------------------------------------------------------------------------------
+function M.set_default_mappings()
+  vim.keymap.set('n',']c', cells.jump_to_next_cell,{desc="Next cell"})
+  vim.keymap.set('n','[c', cells.jump_to_previous_cell,{desc="Previous cell"})
+  vim.keymap.set('n','<localleader>x', cells.delete_cell,{desc="Delete cell"})
+  vim.keymap.set('n','<localleader>s', cells.split_cell,{desc="Split cell"})
+  vim.keymap.set('n','<localleader>a', cells.insert_cell_above,{desc="Insert cell above"})
+  vim.keymap.set('n','<localleader>b', cells.insert_cell_below,{desc="Insert cell below"})
+  vim.keymap.set('n','<localleader>i', cells.insert_cell_here,{desc="Insert cell here"})
+  vim.keymap.set('n','<localleader>v', cells.visual_select_in_cell,{desc="Visual select cell"})
+  vim.keymap.set('n','<localleader>f', function()end,{desc="Cell folds"})
+  vim.keymap.set('n','<localleader>ff', cells.toggle_cell_fold,{desc="Toggle cell fold"})
+  vim.keymap.set('n','<localleader>fc', cells.fold_all_cells,{desc="Fold all cells"})
+  vim.keymap.set('n','<localleader>fo', cells.unfold_all_cells,{desc="Unfold all cells"})
+end
+
+function M.set_default_repl_mappings()
+  local user_config = require("nvim-repl-cells").config
+  vim.keymap.set('n','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
+  vim.keymap.set('n','<localleader>r',function()end,{desc="REPL"})
+  vim.keymap.set('n','<localleader>rsr',repl.send_line,{desc="Send line"})
+  vim.keymap.set('n','<localleader>rsr',repl.send_line,{desc="Send line"})
+  vim.keymap.set('v','<localleader>rs',repl.send_visual,{desc="Send visual"})
+  vim.keymap.set('n','<localleader>ese',repl.send_cell,{desc="Send cell"})
+  vim.keymap.set('n','<localleader>rse',function()repl.send_cell();cells.jump_to_next_cell()end,{desc="Send cell and jump"})
+  vim.keymap.set('n','<localleader>rsf',repl.send_file, {desc="Send file"})
+
+  vim.keymap.set('n','<localleader>rr',function()repl.put_line(user_config.cell_register)end,{desc="Yank and put line"})
+  -- vim.keymap.set('v','<localleader>r',function()repl.put_visual(config.cell_register)end,{desc="Yank and put visual"}) -- FIXME: Delayed for some reason. Puts last yank
+  vim.keymap.set('v','<localleader>r',':<c-w>CellPutVisual<cr>',{desc="Yank and put visual"})
+  vim.keymap.set('n','<localleader>ee',function()repl.put_cell(user_config.cell_register)end,{desc="Yank and put cell"})
+  vim.keymap.set('n','<localleader>re',function()repl.put_cell(user_config.cell_register);cells.jump_to_next_cell()end,{desc="Yank and put cell and jump"})
+  vim.keymap.set('n','<localleader>rf',function()repl.put_file(user_config.cell_register)end, {desc="Yank and put file"})
+end
+
+function M.set_default_filetype_repl_mappings()
+  local user_config = require("nvim-repl-cells").config
+  local buf_type = vim.o.filetype
+  local buf_info = user_config[buf_type]
+  if (buf_info ~= nil) and (buf_info.repl ~= nil) then
+    local repl_str = buf_info.repl
+    vim.keymap.set('n','<localleader>ri', function()repl.send_command(repl_str,true,true)end,{desc="Start REPL",buffer=true})
+  end
+  if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
+    local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
+    vim.keymap.set('n','<localleader>rF', function()repl.send_command(command,true,true)end,{desc="Run file in terminal",buffer=true})
+  end
+end
+
+function get_envs(buf_info)
+  local envs = {}
+  if buf_info.envs ~= nil then
+    for dirs in io.popen("dir "..buf_info.envs):lines() do
+      for dir in string.gmatch(dirs, "[^%s]+") do
+        table.insert(envs, dir)
+      end
+    end
+    return envs
+  else
+    vim.api.nvim_err_writeln("ERROR: No environment directory set")
+  end
+end
+
+function get_env_symbols(envs)
+  local env_syms = {}
+  -- Check matching first letters, if so, move to length 2 symbols, etc.
+  for i,env1 in pairs(envs) do
+    local sym_len = 1
+    local matches = false
+    local sym1 = ""
+    while matches == false do
+      sym1 = string.sub(env1,1,sym_len)
+      for j,env2 in pairs(envs) do
+        if i ~= j then
+          sym2 = string.sub(env2,1,sym_len)
+          if sym1 == sym2 then
+            matches = true
+          end
+        end
+      end
+      if matches == true then
+        sym_len = sym_len + 1
+        matches = false
+      else
+        matches = true
+      end
+    end
+    table.insert(env_syms, sym1)
+  end
+  return env_syms
+end
+
+function M.set_default_filetype_env_mappings()
+  local user_config = require("nvim-repl-cells").config
+  local buf_type = vim.o.filetype
+  local buf_info = user_config[buf_type]
+  vim.keymap.set('n','<localleader>ra',function()end,{desc="Env",buffer=true})
+  if (buf_info ~= nil) and (buf_info.env_cmd ~= nil) then
+    local envs = get_envs(buf_info)
+    local env_syms = get_env_symbols(envs)
+    for i,s in pairs(env_syms) do
+      local env = envs[i]
+      local env_str = buf_info.env_cmd.." "..env
+      local env_func = function()
+        repl.send_command(env_str,true,true)
+      end
+      vim.keymap.set('n','<localleader>ra'..s, env_func,{desc="Activate "..env,buffer=true})
+    end
+  end
+end
+
+-------------------------------------------------------------------------------
+-- Textobjects
+-------------------------------------------------------------------------------
+function M.set_textobject_mappings(key)
+  vim.keymap.set('x', 'i'..key, cells.visual_select_in_cell, {desc="inner cell"})
+  vim.keymap.set('x', 'a'..key, cells.visual_select_around_cell, {desc="outer cell"})
+  vim.keymap.set('o', 'i'..key, cells.visual_select_in_cell, {desc="inner cell"})
+  vim.keymap.set('o', 'a'..key, cells.visual_select_around_cell, {desc="outer cell"})
+  vim.keymap.set('x', 't'..key, cells.visual_select_till_cell, {desc="till cell"})
+  vim.keymap.set('x', 'T'..key, cells.visual_select_back_till_cell, {desc="back till cell"})
+  vim.keymap.set('o', 't'..key, cells.visual_select_till_cell, {desc="till cell"})
+  vim.keymap.set('o', 'T'..key, cells.visual_select_back_till_cell, {desc="back till cell"})
+  vim.keymap.set('x', 'f'..key, cells.visual_select_to_cell, {desc="to cell"})
+  vim.keymap.set('x', 'F'..key, cells.visual_select_back_to_cell, {desc="back to cell"})
+  vim.keymap.set('o', 'f'..key, cells.visual_select_to_cell, {desc="to cell"})
+  vim.keymap.set('o', 'F'..key, cells.visual_select_back_to_cell, {desc="back to cell"})
+end
+
+return M

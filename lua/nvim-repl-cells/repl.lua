@@ -3,7 +3,7 @@ local vim = vim
 local tt = require('toggleterm')
 local tterm = require('toggleterm.terminal')
 local tui = require('toggleterm.ui')
-local cells = require('nvim-repl-cells')
+local cells = require('nvim-repl-cells.cells')
 
 -------------------------------------------------------------------------------
 -- Utilities
