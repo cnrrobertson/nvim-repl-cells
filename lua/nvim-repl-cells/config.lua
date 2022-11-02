@@ -83,6 +83,46 @@ function M.set_repl_user_commands()
   vim.api.nvim_create_user_command("ToggleBufTerm", function()repl.toggle()end, {})
 end
 
+function M.set_repl_auto_user_commands()
+  -- Activating repl and sending file
+  local user_config = require("nvim-repl-cells").config
+  local buf_type = vim.o.filetype
+  local buf_info = user_config[buf_type]
+  if (buf_info ~= nil) and (buf_info.repl ~= nil) then
+    local repl_str = buf_info.repl
+    vim.api.nvim_buf_create_user_command(0,"StartRepl", function()repl.send_command(repl_str,true,true)end,{})
+  end
+  if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
+    local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
+    vim.api.nvim_buf_create_user_command(0,"RunFile", function()repl.send_command(command,true,true)end,{})
+  end
+end
+
+function M.set_env_auto_user_commands()
+  -- Activate some env
+  local user_config = require("nvim-repl-cells").config
+  local buf_type = vim.o.filetype
+  local buf_info = user_config[buf_type]
+  if (buf_info ~= nil) and (buf_info.env_cmd ~= nil) then
+    local envs = get_envs(buf_info)
+    local env_syms = get_env_symbols(envs)
+    local env_strs = {}
+    for i,s in pairs(env_syms) do
+      local env = envs[i]
+      local env_str = buf_info.env_cmd.." "..env
+      -- env_strs[env] = env_str
+      table.insert(env_strs,env)
+    end
+    local activate_func = function(opt)
+      repl.send_command(buf_info.env_cmd.." "..opt.args,true,true)
+    end
+    local complete_func = function()
+      return env_strs
+    end
+    vim.api.nvim_buf_create_user_command(0,"ActivateEnv",activate_func,{complete=complete_func,nargs=1})
+  end
+end
+
 -------------------------------------------------------------------------------
 -- Mappings
 -------------------------------------------------------------------------------

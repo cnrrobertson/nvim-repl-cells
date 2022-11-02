@@ -37,6 +37,10 @@ function M.setup(opts)
   if M.config.highlight == true then
     vim.api.nvim_create_autocmd({"BufModifiedSet","BufEnter"},{group="ReplCells",pattern={"*"},callback=function()cells.highlight_cells()end})
   end
+  if M.config.activate_repl then
+    vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=config.set_repl_auto_user_commands})
+    vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=config.set_env_auto_user_commands})
+  end
 
   -- Folds
   if M.config.autofold == true then
