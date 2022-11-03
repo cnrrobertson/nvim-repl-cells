@@ -13,9 +13,13 @@ M.defaults = {
   default_mappings = false,
 
   -- REPL
-  activate_repl = false,
-  default_repl_mappings = false,
-  cell_register = "z",
+  repl = {
+    enable = false,
+    default_mappings = false,
+    cell_register = "z",
+    size = 0.4*vim.o.lines,
+    direction = "horizontal",
+  },
 
   -- Filetype specific
   python = {

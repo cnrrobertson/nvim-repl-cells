@@ -13,7 +13,7 @@ function M.setup(opts)
   if M.config.set_user_commands then
     config.set_user_commands()
   end
-  if M.config.activate_repl then
+  if M.config.repl.enable then
     config.set_repl_user_commands()
   end
 
@@ -24,7 +24,7 @@ function M.setup(opts)
   if M.config.default_mappings then
     config.set_default_mappings()
   end
-  if M.config.default_repl_mappings then
+  if M.config.repl.default_mappings then
     config.set_default_repl_mappings()
     config.set_default_filetype_repl_mappings()
     config.set_default_filetype_env_mappings()
@@ -37,7 +37,7 @@ function M.setup(opts)
   if M.config.highlight_color then
     vim.api.nvim_create_autocmd({"BufModifiedSet","BufEnter"},{group="ReplCells",pattern={"*"},callback=function()cells.highlight_cells()end})
   end
-  if M.config.activate_repl then
+  if M.config.repl.enable then
     vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=config.set_repl_auto_user_commands})
     vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=config.set_env_auto_user_commands})
   end
