@@ -146,7 +146,6 @@ function M.insert_cell_here(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   vim.api.nvim_buf_set_lines(0, start_row-1, start_row-1, false, {marker})
   vim.api.nvim_win_set_cursor(0, {start_row+1, 0})
-  M.highlight_cells(marker)
 end
 
 function M.insert_cell_above(marker)
@@ -155,7 +154,6 @@ function M.insert_cell_above(marker)
   local top_row = M.get_cell_top(start_row, marker)
   vim.api.nvim_buf_set_lines(0, top_row-1, top_row-1, false, {"", "", marker})
   vim.api.nvim_win_set_cursor(0, {top_row, 0})
-  M.highlight_cells(marker)
 end
 
 function M.insert_cell_below(marker)
@@ -164,7 +162,6 @@ function M.insert_cell_below(marker)
   local bot_row = M.get_cell_bottom(start_row, marker)
   vim.api.nvim_buf_set_lines(0, bot_row, bot_row, false, {"", marker, "", ""})
   vim.api.nvim_win_set_cursor(0, {bot_row+3, 0})
-  M.highlight_cells(marker)
 end
 
 function M.delete_cell(marker)
@@ -176,7 +173,6 @@ function M.delete_cell(marker)
     top_row = top_row - 1
   end
   vim.api.nvim_buf_set_lines(0, top_row-1, bot_row, false, {})
-  M.highlight_cells(marker)
 end
 
 function M.split_cell(marker)
@@ -184,7 +180,6 @@ function M.split_cell(marker)
   local start_row = vim.api.nvim_win_get_cursor(0)[1]
   vim.api.nvim_buf_set_lines(0, start_row, start_row, false, { "", marker, ""})
   vim.api.nvim_win_set_cursor(0, {start_row+3, 0})
-  M.highlight_cells(marker)
 end
 
 function M.merge_cell_below(marker)
@@ -196,7 +191,6 @@ function M.merge_cell_below(marker)
     return
   end
   vim.api.nvim_buf_set_lines(0, bot_row, bot_row+1, false, {})
-  M.highlight_cells(marker)
 end
 
 function M.merge_cell_above(marker)
@@ -207,7 +201,6 @@ function M.merge_cell_above(marker)
     return
   end
   vim.api.nvim_buf_set_lines(0, top_row-2, top_row-1, false, {})
-  M.highlight_cells(marker)
 end
 
 function M.convert_cell_to_markdown(marker)
@@ -221,7 +214,6 @@ function M.convert_cell_to_markdown(marker)
   else
     vim.api.nvim_buf_set_lines(0, top_row-2, top_row-1, false, {marker.." [markdown]"})
   end
-  M.highlight_cells(marker)
 end
 
 -----------------------------------
@@ -270,7 +262,6 @@ function M.move_cell_down(marker)
     vim.api.nvim_buf_set_lines(0,top_row1-1,bot_row2,false,cells)
     vim.api.nvim_win_set_cursor(0, {top_row1+1+len_cell2+start_pos, 0})
   end
-  M.highlight_cells(marker)
 end
 
 function M.move_cell_up(marker)
@@ -289,7 +280,6 @@ function M.move_cell_up(marker)
     vim.api.nvim_buf_set_lines(0,top_row1-1,bot_row2,false,cells)
     vim.api.nvim_win_set_cursor(0, {top_row1+start_pos, 0})
   end
-  M.highlight_cells(marker)
 end
 
 -----------------------------------
@@ -298,6 +288,7 @@ end
 
 function M.highlight_cells(marker)
   local marker = marker or M.get_marker()
+  local user_config = require("nvim-repl-cells").config
   local buf_len = vim.api.nvim_buf_line_count(0)
   local current_row = 1
   local ns_id = vim.api.nvim_create_namespace('cells')
@@ -305,11 +296,11 @@ function M.highlight_cells(marker)
   local top_row, bot_row = M.get_cell_bounds(current_row, marker)
   if top_row ~= 1
   then
-    vim.api.nvim_buf_set_extmark(0,ns_id,0,-1,{hl_eol=true,line_hl_group="ColorColumn"})
+    vim.api.nvim_buf_set_extmark(0,ns_id,0,-1,{hl_eol=true,line_hl_group=user_config.highlight_color})
   end
   while bot_row ~= buf_len
   do
-    vim.api.nvim_buf_set_extmark(0,ns_id,bot_row,-1,{hl_eol=true,line_hl_group="ColorColumn"})
+    vim.api.nvim_buf_set_extmark(0,ns_id,bot_row,-1,{hl_eol=true,line_hl_group=user_config.highlight_color})
     -- vim.api.nvim_buf_add_highlight(0,-1,"Beacon",k-1,0,-1)
     current_row = bot_row + 2
     top_row, bot_row = M.get_cell_bounds(current_row, marker)

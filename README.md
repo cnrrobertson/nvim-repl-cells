@@ -4,20 +4,20 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
 ## TODO:
 - [x] Add language specific settings capability
   - [x] Different markers
-  - [ ] `%paste -q` for ipython
+  - [ ] `%paste -q` for ipython (or better yet, output like codi.vim in output pane or virtual text)
     - [x] Also pasting in other terminals, i.e. julia, in specific register
     - [ ] Explore other concise paste options for repls via `paste_cmd` language option (eval(Meta.parse("begin\n"*clipboard()*"\nend")) wrapped in for julia for example)
   - [x] language specific REPL commands and flags
-- [ ] Options flush out
-  - [ ] Colors for highlighting
+- [x] Options flush out
+  - [x] Colors for highlighting
   - [x] Default mappings
-  - [ ] Setup function
+  - [x] Setup function
 - [ ] Additional terminal functionality
-  - [ ] Name buffer terminals buffer name
   - [ ] Show or don't show terminal on send commands
   - [ ] Possibly manipulate buffers as objects/classes from toggleterm rather than high-level commands
-  - [ ] Direct stdout of terminal channels to virtual text or "output pane" like codi.vim in case they only want to see output from the terminal
-    - https://neovim.io/doc/user/channel.html#on_stdout
+    - [ ] Name buffer terminals buffer name
+    - [ ] Direct stdout of terminal channels to virtual text or "output pane" like codi.vim in case they only want to see output from the terminal
+      - https://neovim.io/doc/user/channel.html#on_stdout
 - [ ] Documentation
   - [ ] Comment lua functions
     - https://github.com/numToStr/lemmy-help/blob/master/emmylua.md
@@ -27,7 +27,7 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
 - [ ] Fill out this README with overview of workflow that it supports and other alternative plugins
   - `jupytext.vim`: how it works well with this for jupyter notebooks
   - `vim-ipython-cell`: this was the inspiration. Doesn't depend on `vim-slime` and is `lua` only
-  - `vim-jukit`: also an inspiration. Again, not buffer specifichttps://neovim.io/doc/user/channel.html#on_stdout
+  - `vim-jukit`: also an inspiration. Again, not buffer specific
   - `jupyter-vim`: complicated setup, not easy for remote work, etc.
   - `magma-nvim`: amazing plugin, complex, harder to debug because of hidden repl, images don't always work, lots of `python`
   - `nvim-ipy`: awesome, again, hard to access repl info, limited cell features, in `python`

@@ -34,7 +34,7 @@ function M.setup(opts)
   vim.api.nvim_create_augroup("ReplCells",{clear=true})
   vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=config.set_default_filetype_repl_mappings})
   vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=config.set_default_filetype_env_mappings})
-  if M.config.highlight == true then
+  if M.config.highlight_color then
     vim.api.nvim_create_autocmd({"BufModifiedSet","BufEnter"},{group="ReplCells",pattern={"*"},callback=function()cells.highlight_cells()end})
   end
   if M.config.activate_repl then

@@ -7,7 +7,7 @@ M.defaults = {
   -- Cells
   set_user_commands = true,
   marker = '# %%',
-  highlight = true,
+  highlight_color = "ColorColumn",
   autofold = false,
   textobject = "c",
   default_mappings = false,
