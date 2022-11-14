@@ -35,10 +35,16 @@ function M.toggle()
   local user_config = require("nvim-repl-cells").config
   local is_terminal = (vim.o.buftype == "terminal")
   local size = user_config.repl.size
-  if is_terminal==false then
-    tt.toggle(vim.fn.bufnr(),size,M.get_dir())
-  else
-    tt.toggle(M.get_term_id(),size,M.get_dir())
+  local direction = user_config.repl.direction
+  local go_back = not user_config.repl.focus_repl_on_toggle
+
+  local term_num = nil
+  if is_terminal then term_num = M.get_term_id() else term_num = vim.fn.bufnr() end
+  local term,_ = tterm.get_or_create_term(term_num,M.get_dir(),direction)
+  term:toggle(size,direction)
+  if go_back then
+    tui.goto_previous()
+    tui.stopinsert()
   end
 end
 -------------------------------------------------------------------------------

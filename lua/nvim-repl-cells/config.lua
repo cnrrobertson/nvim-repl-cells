@@ -19,8 +19,9 @@ M.defaults = {
     cell_register = "z",
     size = 0.4*vim.o.lines,
     direction = "horizontal",
-    open_on_cmd = false,
+    open_on_cmd = true,
     focus_repl_on_cmd = false,
+    focus_repl_on_toggle = true,
   },
 
   -- Filetype specific
