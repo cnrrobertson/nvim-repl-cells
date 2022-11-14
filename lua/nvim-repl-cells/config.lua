@@ -19,6 +19,8 @@ M.defaults = {
     cell_register = "z",
     size = 0.4*vim.o.lines,
     direction = "horizontal",
+    open_on_cmd = false,
+    focus_repl_on_cmd = false,
   },
 
   -- Filetype specific
@@ -78,11 +80,11 @@ function M.set_repl_user_commands()
   vim.api.nvim_create_user_command("CellSendAndJump", function()repl.send_cell();cells.jump_to_next_cell()end, {})
   vim.api.nvim_create_user_command("CellSendFile", function()repl.send_file()end, {})
 
-  vim.api.nvim_create_user_command("CellPutLine", function()repl.put_line(user_config.cell_register)end, {})
-  vim.api.nvim_create_user_command("CellPutVisual", function()repl.put_visual(user_config.cell_register)end, {range=true})
-  vim.api.nvim_create_user_command("CellPut", function()repl.put_cell(user_config.cell_register)end, {})
-  vim.api.nvim_create_user_command("CellPutAndJump", function()repl.put_cell(user_config.cell_register);cells.jump_to_next_cell()end, {})
-  vim.api.nvim_create_user_command("CellPutFile", function()repl.put_file(user_config.cell_register)end, {})
+  vim.api.nvim_create_user_command("CellPutLine", function()repl.put_line(user_config.repl.cell_register)end, {})
+  vim.api.nvim_create_user_command("CellPutVisual", function()repl.put_visual(user_config.repl.cell_register)end, {range=true})
+  vim.api.nvim_create_user_command("CellPut", function()repl.put_cell(user_config.repl.cell_register)end, {})
+  vim.api.nvim_create_user_command("CellPutAndJump", function()repl.put_cell(user_config.repl.cell_register);cells.jump_to_next_cell()end, {})
+  vim.api.nvim_create_user_command("CellPutFile", function()repl.put_file(user_config.repl.cell_register)end, {})
 
   vim.api.nvim_create_user_command("ToggleBufTerm", function()repl.toggle()end, {})
 end
@@ -94,11 +96,11 @@ function M.set_repl_auto_user_commands()
   local buf_info = user_config[buf_type]
   if (buf_info ~= nil) and (buf_info.repl ~= nil) then
     local repl_str = buf_info.repl
-    vim.api.nvim_buf_create_user_command(0,"StartRepl", function()repl.send_command(repl_str,true,true)end,{})
+    vim.api.nvim_buf_create_user_command(0,"StartRepl", function()repl.send_command(repl_str)end,{})
   end
   if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
-    vim.api.nvim_buf_create_user_command(0,"RunFile", function()repl.send_command(command,true,true)end,{})
+    vim.api.nvim_buf_create_user_command(0,"RunFile", function()repl.send_command(command)end,{})
   end
 end
 
@@ -118,7 +120,7 @@ function M.set_env_auto_user_commands()
       table.insert(env_strs,env)
     end
     local activate_func = function(opt)
-      repl.send_command(buf_info.env_cmd.." "..opt.args,true,true)
+      repl.send_command(buf_info.env_cmd.." "..opt.args)
     end
     local complete_func = function()
       return env_strs
@@ -151,12 +153,12 @@ function M.set_default_repl_mappings()
   vim.keymap.set('t','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
   vim.keymap.set('n','<localleader>r',function()end,{desc="REPL"})
 
-  vim.keymap.set('n','<localleader>rr',function()repl.put_line(user_config.cell_register)end,{desc="Yank-Put line"})
-  -- vim.keymap.set('v','<localleader>r',function()repl.put_visual(config.cell_register)end,{desc="Yank-Put visual"}) -- FIXME: Delayed for some reason. Puts last yank
+  vim.keymap.set('n','<localleader>rr',function()repl.put_line(user_config.repl.cell_register)end,{desc="Yank-Put line"})
+  -- vim.keymap.set('v','<localleader>r',function()repl.put_visual(config.repl.cell_register)end,{desc="Yank-Put visual"}) -- FIXME: Delayed for some reason. Puts last yank
   vim.keymap.set('v','<localleader>r',':<c-w>CellPutVisual<cr>',{desc="Yank-Put visual"})
-  vim.keymap.set('n','<localleader>rE',function()repl.put_cell(user_config.cell_register)end,{desc="Yank-Put cell"})
-  vim.keymap.set('n','<localleader>re',function()repl.put_cell(user_config.cell_register);cells.jump_to_next_cell()end,{desc="Yank-Put cell and jump"})
-  vim.keymap.set('n','<localleader>rf',function()repl.put_file(user_config.cell_register)end, {desc="Yank-Put file"})
+  vim.keymap.set('n','<localleader>rE',function()repl.put_cell(user_config.repl.cell_register)end,{desc="Yank-Put cell"})
+  vim.keymap.set('n','<localleader>re',function()repl.put_cell(user_config.repl.cell_register);cells.jump_to_next_cell()end,{desc="Yank-Put cell and jump"})
+  vim.keymap.set('n','<localleader>rf',function()repl.put_file(user_config.repl.cell_register)end, {desc="Yank-Put file"})
 
   vim.keymap.set('n','<localleader>rs',function()end,{desc="Send"})
   vim.keymap.set('n','<localleader>rsr',repl.send_line,{desc="Send line"})
@@ -172,11 +174,11 @@ function M.set_default_filetype_repl_mappings()
   local buf_info = user_config[buf_type]
   if (buf_info ~= nil) and (buf_info.repl ~= nil) then
     local repl_str = buf_info.repl
-    vim.keymap.set('n','<localleader>ri', function()repl.send_command(repl_str,true,true)end,{desc="Start REPL",buffer=true})
+    vim.keymap.set('n','<localleader>ri', function()repl.send_command(repl_str)end,{desc="Start REPL",buffer=true})
   end
   if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
-    vim.keymap.set('n','<localleader>rF', function()repl.send_command(command,true,true)end,{desc="Run file in terminal",buffer=true})
+    vim.keymap.set('n','<localleader>rF', function()repl.send_command(command)end,{desc="Run file in terminal",buffer=true})
   end
 end
 
@@ -235,7 +237,7 @@ function M.set_default_filetype_env_mappings()
       local env = envs[i]
       local env_str = buf_info.env_cmd.." "..env
       local env_func = function()
-        repl.send_command(env_str,true,true)
+        repl.send_command(env_str)
       end
       vim.keymap.set('n','<localleader>ra'..s, env_func,{desc="Activate "..env,buffer=true})
     end

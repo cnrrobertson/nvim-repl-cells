@@ -32,11 +32,13 @@ function M.get_term_id()
 end
 
 function M.toggle()
+  local user_config = require("nvim-repl-cells").config
   local is_terminal = (vim.o.buftype == "terminal")
+  local size = user_config.repl.size
   if is_terminal==false then
-    tt.toggle(vim.fn.bufnr(),nil,M.get_dir())
+    tt.toggle(vim.fn.bufnr(),size,M.get_dir())
   else
-    tt.toggle(M.get_term_id(),nil,M.get_dir())
+    tt.toggle(M.get_term_id(),size,M.get_dir())
   end
 end
 -------------------------------------------------------------------------------
@@ -44,8 +46,10 @@ end
 -------------------------------------------------------------------------------
 -- Send lines style
 function M.send_line()
-  local id = {args=vim.fn.bufnr()}
-  tt.send_lines_to_terminal("single_line",true,id)
+  local bufnum = vim.fn.bufnr()
+  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
+  local cmd = table.concat(vim.api.nvim_buf_get_lines(0,b_line-1,b_line,0))
+  M.send_command(cmd,bufnum)
 end
 
 function M.send_lines(bufnum, top_row, bot_row)
@@ -57,7 +61,7 @@ function M.send_lines(bufnum, top_row, bot_row)
     end
   end
   no_empty[#no_empty+1] = ""
-  tt.exec(table.concat(no_empty,"\n"),bufnum,nil,nil,nil,true)
+  M.send_command(table.concat(no_empty,"\n"))
 end
 
 function M.send_file()
@@ -81,25 +85,52 @@ function M.send_visual()
   M.send_lines(bufnum, start_line, end_line)
 end
 
-function M.send_command(command,go_back,display)
-  tt.exec(command,vim.fn.bufnr(),nil,M.get_dir(),nil,go_back,display)
+function M.send_command(command,bufnum)
+  local user_config = require("nvim-repl-cells").config
+  local go_back = not user_config.repl.focus_repl_on_cmd
+  local open = user_config.repl.open_on_cmd
+  local size = user_config.repl.size
+  local direction = user_config.repl.direction
+
+  bufnum = bufnum or vim.fn.bufnr()
+  local term,created = tterm.get_or_create_term(bufnum,M.get_dir(),direction)
+  if created then
+    term:open(size,direction)
+    if not open then
+      term:close()
+      go_back = false
+    end
+  elseif not term:is_open() and open then
+    term:open(size,direction)
+  end
+  if term:is_float() then go_back = false end
+  term:send(command, go_back)
 end
 
 -- Yank and put style
 function M.put_lines(bufnum,register)
-  local term = tterm.get_or_create_term(bufnum,nil,M.get_dir())
+  local user_config = require("nvim-repl-cells").config
+  local open = user_config.repl.open_on_cmd
+  local size = user_config.repl.size
+  local direction = user_config.repl.direction
+  local term = tterm.get_or_create_term(bufnum)
   tui.update_origin_window(term.window)
-  if term:is_open() == false then
-    term:open(vim.o.lines*0.4,term.direction) -- TODO: Need to get correct config for size
+  local was_open = term:is_open()
+  if not was_open then
+    term:open(size,direction)
   else
     term:focus()
   end
   vim.cmd("put "..register)
+  if not was_open and not open then
+    term:close()
+  end
   -- extra line (or two) to execute
-  tt.exec("",bufnum,nil,M.get_dir())
   local reg_contents = vim.fn.getreginfo(register).regcontents
-  if reg_contents[#reg_contents] ~= "" then
-    tt.exec("",bufnum,nil,M.get_dir())
+  if reg_contents[#reg_contents] == "" then
+    M.send_command("",bufnum)
+  else
+    M.send_command("\n",bufnum)
   end
 end
 

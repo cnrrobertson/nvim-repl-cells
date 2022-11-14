@@ -13,8 +13,8 @@ Utility functions to add/remove/navigate/visual select "cells" of code in Neovim
   - [x] Default mappings
   - [x] Setup function
 - [ ] Additional terminal functionality
-  - [ ] Show or don't show terminal on send commands
-  - [ ] Possibly manipulate buffers as objects/classes from toggleterm rather than high-level commands
+  - [x] Show or don't show terminal on send commands
+  - [x] Possibly manipulate buffers as objects/classes from toggleterm rather than high-level commands
     - [ ] Name buffer terminals buffer name
     - [ ] Direct stdout of terminal channels to virtual text or "output pane" like codi.vim in case they only want to see output from the terminal
       - https://neovim.io/doc/user/channel.html#on_stdout
