@@ -24,7 +24,7 @@ function M.setup(opts)
   if M.config.default_mappings then
     config.set_default_mappings()
   end
-  if M.config.repl.default_mappings then
+  if M.config.repl.default_mappings.enable then
     config.set_default_repl_mappings()
     config.set_default_filetype_repl_mappings()
     config.set_default_filetype_env_mappings()
