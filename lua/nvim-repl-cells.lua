@@ -10,9 +10,6 @@ function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", {}, config.defaults, opts or {})
 
   -- User commands
-  if M.config.set_user_commands then
-    config.set_user_commands()
-  end
   if M.config.repl.enable then
     config.set_repl_user_commands()
   end

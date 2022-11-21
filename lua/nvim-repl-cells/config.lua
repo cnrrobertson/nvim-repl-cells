@@ -5,7 +5,6 @@ local vim = vim
 
 M.defaults = {
   -- Cells
-  set_user_commands = true,
   marker = '# %%',
   highlight_color = "ColorColumn",
   autofold = false,
