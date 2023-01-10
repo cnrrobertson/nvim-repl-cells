@@ -53,7 +53,7 @@ end
 -- Send lines style
 function M.send_line()
   local bufnum = vim.fn.bufnr()
-  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
+  local b_line, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local cmd = table.concat(vim.api.nvim_buf_get_lines(0,b_line-1,b_line,0))
   M.send_command(cmd,bufnum)
 end
@@ -79,15 +79,15 @@ end
 
 function M.send_cell()
   local bufnum = vim.fn.bufnr()
-  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
+  local b_line, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local top_row, bot_row = cells.get_cell_bounds(b_line, cells.get_marker())
   M.send_lines(bufnum, top_row, bot_row)
 end
 
 function M.send_visual()
   local bufnum = vim.fn.bufnr()
-  local start_line, _ = table.unpack(vim.fn.getpos("'<"), 2, 3)
-  local end_line, _ = table.unpack(vim.fn.getpos("'>"), 2, 3)
+  local start_line, _ = unpack(vim.fn.getpos("'<"), 2, 3)
+  local end_line, _ = unpack(vim.fn.getpos("'>"), 2, 3)
   M.send_lines(bufnum, start_line, end_line)
 end
 
@@ -148,7 +148,7 @@ end
 
 function M.put_cell(register)
   local bufnum = vim.fn.bufnr()
-  local b_line, _ = table.unpack(vim.api.nvim_win_get_cursor(0))
+  local b_line, _ = unpack(vim.api.nvim_win_get_cursor(0))
   local top_row, bot_row = cells.get_cell_bounds(b_line, cells.get_marker())
   vim.cmd(tostring(top_row)..","..tostring(bot_row).."yank "..register)
   M.put_lines(bufnum,register)

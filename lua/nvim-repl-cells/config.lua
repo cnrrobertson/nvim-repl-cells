@@ -77,7 +77,7 @@ end
 
 function M.set_repl_user_commands()
   local user_config = require("nvim-repl-cells").config
-  local cell_register = user_config.repl.cell_register
+  local cell_register = user_config.repl.default_mappings.cell_register
   vim.api.nvim_create_user_command("CellSendLine", function()repl.send_line()end, {})
   vim.api.nvim_create_user_command("CellSendVisual", function()repl.send_visual()end, {range=true})
   vim.api.nvim_create_user_command("CellSend", function()repl.send_cell()end, {})
@@ -153,7 +153,7 @@ end
 
 function M.set_default_repl_mappings()
   local user_config = require("nvim-repl-cells").config
-  local cell_register = user_config.repl.default_mappings
+  local cell_register = user_config.repl.default_mappings.cell_register
 
   vim.keymap.set('n','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
   vim.keymap.set('t','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
