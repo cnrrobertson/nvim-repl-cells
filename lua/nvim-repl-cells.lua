@@ -21,15 +21,15 @@ function M.setup(opts)
   if M.config.default_mappings then
     config.set_default_mappings()
   end
-  if M.config.repl.enable and M.config.repl.default_mappings.enable then
+  if (M.config.repl.enable) and (M.config.repl.default_mappings.enable) then
     config.set_default_repl_mappings()
     config.set_default_filetype_repl_mappings()
     config.set_default_filetype_env_mappings()
   end
 
   -- Autocommands
-  if M.config.repl.enable and M.config.repl.default_mappings.enable then
-    vim.api.nvim_create_augroup("ReplCells",{clear=true})
+  vim.api.nvim_create_augroup("ReplCells",{clear=true})
+  if (M.config.repl.enable) and (M.config.repl.default_mappings.enable) then
     vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=config.set_default_filetype_repl_mappings})
     vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=config.set_default_filetype_env_mappings})
     if M.config.highlight_color then
