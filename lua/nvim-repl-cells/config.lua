@@ -1,6 +1,7 @@
 local M = {}
 local cells = require("nvim-repl-cells.cells")
 local repl = require("nvim-repl-cells.repl")
+local nuiterm = require("nuiterm")
 local vim = vim
 
 M.defaults = {
@@ -16,7 +17,6 @@ M.defaults = {
     enable = false,
     default_mappings = {
       enable = false,
-      style = "put", -- or "send"
       cell_register = "z",
     },
     size = 0.4*vim.o.lines,
@@ -32,7 +32,7 @@ M.defaults = {
     repl = 'ipython --no-autoindent',
     file_send = 'python',
     env_cmd = 'conda activate',
-    envs = '~/mambaforge/envs/',
+    envs = '~/miniconda3/envs/',
   },
   julia = {
     marker = '# %%',
@@ -78,19 +78,13 @@ end
 function M.set_repl_user_commands()
   local user_config = require("nvim-repl-cells").config
   local cell_register = user_config.repl.default_mappings.cell_register
-  vim.api.nvim_create_user_command("CellSendLine", function()repl.send_line()end, {})
-  vim.api.nvim_create_user_command("CellSendVisual", function()repl.send_visual()end, {range=true})
+  vim.api.nvim_create_user_command("CellSendLine", function()nuiterm.send_line()end, {})
+  vim.api.nvim_create_user_command("CellSendVisual", function()nuiterm.send_visual()end, {range=true})
   vim.api.nvim_create_user_command("CellSend", function()repl.send_cell()end, {})
   vim.api.nvim_create_user_command("CellSendAndJump", function()repl.send_cell();cells.jump_to_next_cell()end, {})
-  vim.api.nvim_create_user_command("CellSendFile", function()repl.send_file()end, {})
+  vim.api.nvim_create_user_command("CellSendFile", function()nuiterm.send_file()end, {})
 
-  vim.api.nvim_create_user_command("CellPutLine", function()repl.put_line(cell_register)end, {})
-  vim.api.nvim_create_user_command("CellPutVisual", function()repl.put_visual(cell_register)end, {range=true})
-  vim.api.nvim_create_user_command("CellPut", function()repl.put_cell(cell_register)end, {})
-  vim.api.nvim_create_user_command("CellPutAndJump", function()repl.put_cell(cell_register);cells.jump_to_next_cell()end, {})
-  vim.api.nvim_create_user_command("CellPutFile", function()repl.put_file(cell_register)end, {})
-
-  vim.api.nvim_create_user_command("ToggleBufTerm", function()repl.toggle()end, {})
+  vim.api.nvim_create_user_command("ToggleBufTerm", function()nuiterm.toggle()end, {})
 end
 
 function M.set_repl_auto_user_commands()
@@ -100,11 +94,11 @@ function M.set_repl_auto_user_commands()
   local buf_info = user_config[buf_type]
   if (buf_info ~= nil) and (buf_info.repl ~= nil) then
     local repl_str = buf_info.repl
-    vim.api.nvim_buf_create_user_command(0,"StartRepl", function()repl.send_command(repl_str)end,{})
+    vim.api.nvim_buf_create_user_command(0,"StartRepl", function()nuiterm.send(repl_str)end,{})
   end
   if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
-    vim.api.nvim_buf_create_user_command(0,"RunFile", function()repl.send_command(command)end,{})
+    vim.api.nvim_buf_create_user_command(0,"RunFile", function()nuiterm.send(command)end,{})
   end
 end
 
@@ -124,7 +118,7 @@ function M.set_env_auto_user_commands()
       table.insert(env_strs,env)
     end
     local activate_func = function(opt)
-      repl.send_command(buf_info.env_cmd.." "..opt.args)
+      nuiterm.send(buf_info.env_cmd.." "..opt.args)
     end
     local complete_func = function()
       return env_strs
@@ -152,25 +146,16 @@ function M.set_default_mappings()
 end
 
 function M.set_default_repl_mappings()
-  local user_config = require("nvim-repl-cells").config
-  local cell_register = user_config.repl.default_mappings.cell_register
+  -- local user_config = require("nvim-repl-cells").config
+  -- local cell_register = user_config.repl.default_mappings.cell_register
 
-  vim.keymap.set('n','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
-  vim.keymap.set('t','<a-n>',repl.toggle,{desc="Toggle buffer terminal"})
-  if user_config.repl.default_mappings.style == "put" then
-    vim.keymap.set('n','<localleader>rr',function()repl.put_line(cell_register)end,{desc="Yank-Put line"})
-    -- vim.keymap.set('v','<localleader>r',function()repl.put_visual(cell_register)end,{desc="Yank-Put visual"}) -- FIXME: Delayed for some reason. Puts last yank
-    vim.keymap.set('v','<localleader>r',':<c-w>CellPutVisual<cr>',{desc="Yank-Put visual"})
-    vim.keymap.set('n','<localleader>rE',function()repl.put_cell(cell_register)end,{desc="Yank-Put cell"})
-    vim.keymap.set('n','<localleader>re',function()repl.put_cell(cell_register);cells.jump_to_next_cell()end,{desc="Yank-Put cell and jump"})
-    vim.keymap.set('n','<localleader>rf',function()repl.put_file(cell_register)end, {desc="Yank-Put file"})
-  else
-    vim.keymap.set('n','<localleader>rr',repl.send_line,{desc="Send line"})
-    vim.keymap.set('v','<localleader>r',repl.send_visual,{desc="Send visual"})
-    vim.keymap.set('n','<localleader>rE',repl.send_cell,{desc="Send cell"})
-    vim.keymap.set('n','<localleader>re',function()repl.send_cell();cells.jump_to_next_cell()end,{desc="Send cell and jump"})
-    vim.keymap.set('n','<localleader>rf',repl.send_file, {desc="Send file"})
-  end
+  vim.keymap.set('n','<a-n>',nuiterm.toggle,{desc="Toggle buffer terminal"})
+  vim.keymap.set('t','<a-n>',nuiterm.toggle,{desc="Toggle buffer terminal"})
+  vim.keymap.set('n','<localleader>rr',nuiterm.send_line,{desc="Send line"})
+  vim.keymap.set('v','<localleader>r',nuiterm.send_visual,{desc="Send visual"})
+  vim.keymap.set('n','<localleader>rE',repl.send_cell,{desc="Send cell"})
+  vim.keymap.set('n','<localleader>re',function()repl.send_cell();cells.jump_to_next_cell()end,{desc="Send cell and jump"})
+  vim.keymap.set('n','<localleader>rf',nuiterm.send_file, {desc="Send file"})
 end
 
 function M.set_default_filetype_repl_mappings()
@@ -179,18 +164,18 @@ function M.set_default_filetype_repl_mappings()
   local buf_info = user_config[buf_type]
   if (buf_info ~= nil) and (buf_info.repl ~= nil) then
     local repl_str = buf_info.repl
-    vim.keymap.set('n','<localleader>ri', function()repl.send_command(repl_str)end,{desc="Start REPL",buffer=true})
+    vim.keymap.set('n','<localleader>ri', function()nuiterm.send(repl_str)end,{desc="Start REPL",buffer=true})
   end
   if (buf_info ~= nil) and (buf_info.file_send ~= nil) then
     local command = buf_info.file_send.." "..vim.api.nvim_buf_get_name(0)
-    vim.keymap.set('n','<localleader>rF', function()repl.send_command(command)end,{desc="Run file in terminal",buffer=true})
+    vim.keymap.set('n','<localleader>rF', function()nuiterm.send(command)end,{desc="Run file in terminal",buffer=true})
   end
 end
 
 function get_envs(buf_info)
   local envs = {}
   if buf_info.envs ~= nil then
-    for dirs in io.popen("dir "..buf_info.envs):lines() do
+    for dirs in io.popen("ls "..buf_info.envs):lines() do
       for dir in string.gmatch(dirs, "[^%s]+") do
         table.insert(envs, dir)
       end
@@ -242,7 +227,7 @@ function M.set_default_filetype_env_mappings()
       local env = envs[i]
       local env_str = buf_info.env_cmd.." "..env
       local env_func = function()
-        repl.send_command(env_str)
+        nuiterm.send(env_str)
       end
       vim.keymap.set('n','<localleader>ra'..s, env_func,{desc="Activate "..env,buffer=true})
     end
