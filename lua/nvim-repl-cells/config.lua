@@ -51,6 +51,11 @@ M.defaults = {
     marker = '-- %%',
     repl = 'lua',
     file_send = 'lua',
+  },
+  r = {
+    marker = '# %%',
+    repl = 'R',
+    file_send = 'Rscript',
   }
 }
 
