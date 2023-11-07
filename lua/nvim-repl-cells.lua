@@ -11,7 +11,7 @@ function M.setup(opts)
 
   -- User commands
   if M.config.repl.enable then
-    config.set_repl_user_commands()
+    config.set_repl_user_commands(M.config)
   end
 
   -- Default keybinds
@@ -22,7 +22,7 @@ function M.setup(opts)
     config.set_default_mappings()
   end
   if (M.config.repl.enable) and (M.config.repl.default_mappings.enable) then
-    config.set_default_repl_mappings()
+    config.set_default_repl_mappings(M.config)
     config.set_default_filetype_repl_mappings()
     config.set_default_filetype_env_mappings()
   end
@@ -30,14 +30,14 @@ function M.setup(opts)
   -- Autocommands
   vim.api.nvim_create_augroup("ReplCells",{clear=true})
   if (M.config.repl.enable) and (M.config.repl.default_mappings.enable) then
-    vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=config.set_default_filetype_repl_mappings})
+    vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=function()config.set_default_filetype_repl_mappings(M.config)end})
     vim.api.nvim_create_autocmd({"BufEnter"}, {group="ReplCells",pattern={"*"},callback=config.set_default_filetype_env_mappings})
     if M.config.highlight_color then
       vim.api.nvim_create_autocmd({"BufModifiedSet","BufEnter"},{group="ReplCells",pattern={"*"},callback=function()cells.highlight_cells()end})
     end
   end
   if M.config.repl.enable then
-    vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=config.set_repl_auto_user_commands})
+    vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=function()config.set_repl_auto_user_commands(M.config)end})
     vim.api.nvim_create_autocmd({"BufReadPost"}, {group="ReplCells",pattern={"*"},callback=config.set_env_auto_user_commands})
   end
 

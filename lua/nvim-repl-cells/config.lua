@@ -59,6 +59,17 @@ M.defaults = {
   }
 }
 
+-- Retrieve REPL for ft
+function M.get_repl(config)
+  local ft = vim.o.filetype
+  for name,tab in pairs(config) do
+    if name == ft then
+      return tab.repl
+    end
+  end
+  return nil
+end
+
 -------------------------------------------------------------------------------
 -- Commands
 -------------------------------------------------------------------------------
@@ -80,16 +91,16 @@ function M.set_user_commands()
   vim.api.nvim_create_user_command("CellUnfoldAll", function()cells.unfold_all_cells()end, {})
 end
 
-function M.set_repl_user_commands()
+function M.set_repl_user_commands(config)
   local user_config = require("nvim-repl-cells").config
   local cell_register = user_config.repl.default_mappings.cell_register
-  vim.api.nvim_create_user_command("CellSendLine", function()nuiterm.send_line()end, {})
-  vim.api.nvim_create_user_command("CellSendVisual", function()nuiterm.send_visual()end, {range=true})
-  vim.api.nvim_create_user_command("CellSend", function()repl.send_cell()end, {})
-  vim.api.nvim_create_user_command("CellSendAndJump", function()repl.send_cell();cells.jump_to_next_cell()end, {})
-  vim.api.nvim_create_user_command("CellSendFile", function()nuiterm.send_file()end, {})
+  vim.api.nvim_create_user_command("CellSendLine", function()nuiterm.send_line(nil,nil,M.get_repl(config))end, {})
+  vim.api.nvim_create_user_command("CellSendVisual", function()nuiterm.send_visual(nil,nil,M.get_repl(config))end, {range=true})
+  vim.api.nvim_create_user_command("CellSend", function()repl.send_cell(nil,nil,M.get_repl(config))end, {})
+  vim.api.nvim_create_user_command("CellSendAndJump", function()repl.send_cell(nil,nil,M.get_repl(config));cells.jump_to_next_cell()end, {})
+  vim.api.nvim_create_user_command("CellSendFile", function()nuiterm.send_file(nil,nil,M.get_repl(config))end, {})
 
-  vim.api.nvim_create_user_command("ToggleBufTerm", function()nuiterm.toggle()end, {})
+  vim.api.nvim_create_user_command("ToggleBufTerm", function()nuiterm.toggle(nil,nil,M.get_repl(config))end, {})
 end
 
 function M.set_repl_auto_user_commands()
@@ -150,17 +161,17 @@ function M.set_default_mappings()
   vim.keymap.set('n','<localleader>fo', cells.unfold_all_cells,{desc="Unfold all cells"})
 end
 
-function M.set_default_repl_mappings()
+function M.set_default_repl_mappings(config)
   -- local user_config = require("nvim-repl-cells").config
   -- local cell_register = user_config.repl.default_mappings.cell_register
 
-  vim.keymap.set('n','<a-n>',nuiterm.toggle,{desc="Toggle buffer terminal"})
-  vim.keymap.set('t','<a-n>',nuiterm.toggle,{desc="Toggle buffer terminal"})
-  vim.keymap.set('n','<localleader>rr',nuiterm.send_line,{desc="Send line"})
-  vim.keymap.set('v','<localleader>r',nuiterm.send_visual,{desc="Send visual"})
-  vim.keymap.set('n','<localleader>rE',repl.send_cell,{desc="Send cell"})
-  vim.keymap.set('n','<localleader>re',function()repl.send_cell();cells.jump_to_next_cell()end,{desc="Send cell and jump"})
-  vim.keymap.set('n','<localleader>rf',nuiterm.send_file, {desc="Send file"})
+  -- vim.keymap.set('n','<a-n>',function()nuiterm.toggle(nil,nil,M.get_repl(config))end,{desc="Toggle buffer terminal"})
+  -- vim.keymap.set('t','<a-n>',function()nuiterm.toggle(nil,nil,M.get_repl(config))end,{desc="Toggle buffer terminal"})
+  vim.keymap.set('n','<localleader>rr',function()nuiterm.send_line(nil,nil,M.get_repl(config))end,{desc="Send line"})
+  vim.keymap.set('v','<localleader>r',function()nuiterm.send_visual(nil,nil,M.get_repl(config))end,{desc="Send visual"})
+  vim.keymap.set('n','<localleader>rE',function()repl.send_cell(nil,nil,M.get_repl(config))end,{desc="Send cell"})
+  vim.keymap.set('n','<localleader>re',function()repl.send_cell(nil,nil,M.get_repl(config));cells.jump_to_next_cell()end,{desc="Send cell and jump"})
+  vim.keymap.set('n','<localleader>rf',function()nuiterm.send_file(nil,nil,M.get_repl(config))end, {desc="Send file"})
 end
 
 function M.set_default_filetype_repl_mappings()
