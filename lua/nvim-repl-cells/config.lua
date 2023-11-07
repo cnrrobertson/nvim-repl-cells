@@ -54,7 +54,7 @@ M.defaults = {
   },
   r = {
     marker = '# %%',
-    repl = 'R',
+    repl = 'radian',
     file_send = 'Rscript',
   }
 }
